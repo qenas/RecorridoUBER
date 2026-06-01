@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +34,16 @@ public class Lector {
 
     }
 
+    private static String normalizar(String calle) {
+        calle = Normalizer.normalize(calle, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+
+        return calle
+                .toLowerCase()
+                .replaceFirst("^(avenida|av\\.|pasaje|paseo|doctor|dr\\.)\\s+", "")
+                .trim();
+    }
+
     private void cargarCalles() {
         this.calles = new HashMap<>();
 
@@ -40,6 +51,8 @@ public class Lector {
             JSONObject index = features.getJSONObject(i);
             JSONObject indexProperties = index.getJSONObject("properties");
             String nombreCalle = indexProperties.optString("name", "S/N");
+
+            nombreCalle = normalizar(nombreCalle);
 
 
             JSONArray cuadras = index.getJSONObject("geometry").getJSONArray("coordinates");
@@ -117,13 +130,17 @@ public class Lector {
 
             String cad = "";
 
-            for(int i = 0; i < aux.length(); i++) {
+            /*for(int i = 0; i < aux.length(); i++) {
                 String punto = aux.getJSONArray(i).toString();
                 cad += punto + " ";
-            }
-            System.out.println(cad);
+            }*/
+            //System.out.println(cad);
         }
         System.out.println(this.calles.size());
+    }
+
+    public Map<String, JSONArray> getCalles() {
+        return this.calles;
     }
 
 

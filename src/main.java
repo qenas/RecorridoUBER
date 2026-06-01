@@ -1,5 +1,6 @@
 import grafos.grafoDirigido.GrafoDirigido;
 import lector.Lector;
+import org.json.JSONArray;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,11 +28,26 @@ public class main {
 
         lector.cargarGrafoCoste(mapaCoste);
 
-        mapaCoste.muestraGrafo();
+        //mapaCoste.muestraGrafo();
 
         lector.mostrarCalles();
 
-        Map<Integer, String> calles = new HashMap<>();
+
+
+
+        Map<String, JSONArray> calles = lector.getCalles();
+
+        GrafoDirigido callesPesos = new GrafoDirigido(calles.size());
+
+        callesPesos.cargarGrafoVacio();
+
+        for(int i = 0; i < mapaCoste.getOrden(); i++) {
+            for(int j = 0; j < mapaCoste.getOrden(); j++) {
+
+            }
+        }
+
+
 
     }
 }
