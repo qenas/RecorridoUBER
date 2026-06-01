@@ -30,7 +30,7 @@ public class main {
 
         //mapaCoste.muestraGrafo();
 
-        lector.mostrarCalles();
+       // lector.mostrarCalles();
 
 
 
@@ -41,11 +41,9 @@ public class main {
 
         callesPesos.cargarGrafoVacio();
 
-        for(int i = 0; i < mapaCoste.getOrden(); i++) {
-            for(int j = 0; j < mapaCoste.getOrden(); j++) {
+        lector.cargarGrafoCalles();
 
-            }
-        }
+
 
 
 

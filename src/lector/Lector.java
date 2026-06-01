@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +43,39 @@ public class Lector {
                 .toLowerCase()
                 .replaceFirst("^(avenida|av\\.|pasaje|paseo|doctor|dr\\.)\\s+", "")
                 .trim();
+    }
+
+    public void cargarGrafoCalles() {
+        int i=0, j=0;
+
+        ArrayList<String> nombreCalles = new ArrayList<String>();
+
+        for(String key: calles.keySet()) {
+            nombreCalles.add(i, key);
+
+            System.out.println(i + " - " + nombreCalles.get(i));
+
+            i++;
+
+
+        }
+
+
+
+
+
+
+        /*for(String key : calles.keySet()) {
+            JSONArray array = calles.get(key);
+            for(String keyAux : calles.keySet()) {
+                if(!key.equals(keyAux)) {
+                    JSONArray arrayAux = calles.get(keyAux);
+                    for(int i = 0)
+                }
+                j++;
+            }
+            i++;
+        }*/
     }
 
     private void cargarCalles() {
@@ -142,6 +176,8 @@ public class Lector {
     public Map<String, JSONArray> getCalles() {
         return this.calles;
     }
+
+
 
 
 }
