@@ -1,3 +1,4 @@
+import Objetos.Mapa;
 import gestion.JSONLector;
 import grafos.grafoDirigido.GrafoDirigido;
 import gestion.Lector;
@@ -51,7 +52,11 @@ public class main {
         JSONLector jsonLector = new JSONLector();
 
 
-        JSONObject jsonObject = jsonLector.getJSONObject("src/archivos/CentroyMacroSALTA.geojson");
+        JSONObject salta = jsonLector.getJSONObject("src/archivos/CentroyMacroSALTA.geojson");
+
+        Mapa mapa = new Mapa(salta);
+
+        mapa.mostrarCalles();
 
 
 

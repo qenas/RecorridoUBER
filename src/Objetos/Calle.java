@@ -3,13 +3,23 @@ package Objetos;
 import java.util.ArrayList;
 
 public class Calle {
+    private int id;
     private String nombre, tipo;
     private ArrayList<String> nodos;
 
-    public Calle(String nombre, String tipo, ArrayList<String> nodos) {
+    public Calle(int id, String nombre, String tipo, ArrayList<String> nodos) {
+        this.id = id;
         this.nombre = nombre;
         this.tipo = tipo;
         this.nodos = nodos;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public String getNombre() {
+        return this.nombre;
     }
 
     public ArrayList<String> getNodos() {
@@ -29,4 +39,6 @@ public class Calle {
         }
         System.out.println("Nodos de la calle " + this.nombre + " actualizados.");
     }
+
+
 }
