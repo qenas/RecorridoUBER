@@ -4,7 +4,6 @@ import grafos.grafoDirigido.GrafoDirigido;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.awt.image.AreaAveragingScaleFilter;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +17,7 @@ public class Mapa {
     public Mapa(JSONObject jsonObject) {
         this.calles = new HashMap<>();
         cargarCalles(jsonObject);
+
         this.conexiones = new GrafoDirigido(cantCalles);
         this.pesos = new GrafoDirigido(cantCalles);
 
@@ -45,6 +45,9 @@ public class Mapa {
         }
         return aux;
     }
+
+
+    // metodo para cargar el el map de calles <NombreCalle, Calle>
 
     private void cargarCalles(JSONObject jsonObject) {
         JSONArray featuresArray = jsonObject.getJSONArray("features");
@@ -77,9 +80,13 @@ public class Mapa {
         for(String key : this.calles.keySet()) {
             Calle calle = this.calles.get(key);
             System.out.println(calle.getId() + " Calle: " + calle.getNombre());
+            //calle.mostrarNodos();
+
         }
     }
 
+    private void cargarGrafoConexiones() {
 
+    }
 
 }

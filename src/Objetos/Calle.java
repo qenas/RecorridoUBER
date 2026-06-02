@@ -37,8 +37,25 @@ public class Calle {
                 this.nodos.add(nodo);
             }
         }
-        System.out.println("Nodos de la calle " + this.nombre + " actualizados.");
     }
 
+    public void mostrarNodos() {
+        for(int i = 0; i < this.nodos.size(); i++) {
+            System.out.println(this.nodos.get(i));
+        }
+    }
+
+    public boolean tieneNodosRepetidos() {
+        ArrayList<String> visitados = new ArrayList<>();
+        for(int i = 0; i < this.nodos.size(); i++) {
+            if(visitados.contains(this.nodos.get(i))) {
+                return true;
+            }
+            visitados.add(this.nodos.get(i));
+        }
+
+        return false;
+
+    }
 
 }
