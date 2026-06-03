@@ -105,4 +105,7 @@ public abstract class AbsGrafo implements OperacionesG{
 
 	public abstract void actualizarArista(double costo, int i, int j);
 
+	public static double getInfinito() {
+		return infinito;
+	}
 }

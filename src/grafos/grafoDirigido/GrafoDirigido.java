@@ -94,4 +94,8 @@ public class GrafoDirigido extends AbsGrafoD{
 		this.matrizCosto.actualizar(costo, i, j);
 	}
 
+	public double getArista(int i, int j) {
+		return (double) this.matrizCosto.devolver(i, j);
+	}
+
 }
