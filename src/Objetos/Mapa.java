@@ -23,13 +23,15 @@ public class Mapa {
         this.callesPorIndice = new ArrayList<>();
         cargarCalles(jsonObject);
 
+        this.intersecciones = new HashMap<>();
+
         this.grafoIntersecciones = new GrafoDirigido(cantCalles);
         cargarGrafoIntersecciones();
 
-        this.intersecciones = new HashMap<>();
 
 
-        this.grafoPesos = new GrafoDirigido(cantCalles);
+
+        this.grafoPesos = new GrafoDirigido(this.intersecciones.size());
         cargarGrafoPesos();
 
 
@@ -132,18 +134,22 @@ public class Mapa {
 
                         Interseccion interseccion;
 
-                        if(!existeInterseccion(coordenada)) {
+                        if(!this.intersecciones.containsKey(coordenada)) { // si no existe un objeto interseccion asociado a esa coordenada, crea uno nuevo y lo pone en el Map
                             interseccion = new Interseccion(coordenada);
+
                             interseccion.addCalle(calleA);
                             interseccion.addCalle(calleB);
+
                             this.intersecciones.put(coordenada, interseccion);
+
                         } else {
+
                             interseccion = this.intersecciones.get(coordenada);
                         }
 
 
-                        calleA.addInterseccion(interseccion); // carga en la calle i
-                        calleB.addInterseccion(interseccion); // carga en la calle j
+                        calleA.addInterseccion(interseccion);
+                        calleB.addInterseccion(interseccion);
 
 
                         this.grafoIntersecciones.actualizarArista(1, i, j);
@@ -157,31 +163,20 @@ public class Mapa {
         }
     }
 
-    // metodo para cargar el map de intersecciones UNICAS
 
-    private boolean existeInterseccion(String coordenada) {
-        return (this.intersecciones.containsKey(coordenada));
+    public void mostrarIntersecciones() {
+        for(String key : this.intersecciones.keySet()) {
+            System.out.println(this.intersecciones.get(key).toString());
+        }
+        System.out.println(this.intersecciones.size());
     }
-
 
 
     private void cargarGrafoPesos() {
         this.grafoPesos.cargarGrafoVacio();
-        int cont = 0;
 
+        for(int i = 0; i < this.grafoPesos.getOrden(); i++) {
 
-        for(int i = 0; i < this.cantCalles; i++) {
-            for(int j = 0; j < this.cantCalles; j++) {
-
-                if(i != j && this.grafoIntersecciones.getArista(i, j) == 1) {
-
-                    Calle calle = this.callesPorIndice.get(i);
-
-                    this.grafoPesos.actualizarArista(calle.getVelocidad(), i, j);
-                    cont++;
-                }
-
-            }
         }
 
 

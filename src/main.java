@@ -56,10 +56,11 @@ public class main {
 
         Mapa mapa = new Mapa(salta);
 
-        mapa.mostrarCalles();
+        //mapa.mostrarCalles();
         //mapa.mostrarMatrizDeIntersecciones();
         //mapa.mostrarMatrizDePesos();
 
+        mapa.mostrarIntersecciones();
 
 
 

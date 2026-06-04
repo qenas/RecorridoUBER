@@ -4,7 +4,6 @@ import java.awt.image.AreaAveragingScaleFilter;
 import java.util.ArrayList;
 
 public class Interseccion {
-    private int ID;
     private ArrayList<Calle> calles;
     private String coordenada;
 
@@ -17,8 +16,22 @@ public class Interseccion {
         this.calles.add(calle);
     }
 
+    @Override
+    public String toString() {
+        String cad = "";
+
+        cad += "Interseccion entre " + getStringCalles();
+
+        return cad;
+    }
+
+    private String getStringCalles() {
+        String nombreCalles = "";
+        for(int i = 0; i < this.calles.size(); i++) {
+            nombreCalles += this.calles.get(i).getNombre() + " ";
+        }
+        return nombreCalles;
 
 
-
-
+    }
 }
