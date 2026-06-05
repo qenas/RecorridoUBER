@@ -97,13 +97,6 @@ public class Mapa {
 
 
     public void mostrarCalles() {
-        /*for(String key : this.callesPorNombre.keySet()) {
-            Calle calle = this.callesPorNombre.get(key);
-            System.out.println(calle.getId() + " Calle: " + calle.getNombre());
-            //calle.mostrarNodos();
-
-        }*/
-
         for(int i = 0; i < this.callesPorIndice.size(); i++) {
             Calle calle = this.callesPorIndice.get(i);
             System.out.println(calle.getId() + " Calle: " + calle.getNombre() + ". Tipo: " + calle.getTipo());
@@ -117,10 +110,13 @@ public class Mapa {
     private void cargarGrafoIntersecciones() {
         this.grafoIntersecciones.cargarGrafoVacio();
 
+
+        int indiceIntersecciones = 0;
+
         for(int i = 0; i < this.cantCalles; i++) {
             Calle calleA = this.callesPorIndice.get(i);
             ArrayList<String> calleNodosA = calleA.getNodos();
-
+            //System.out.println("Analizando intersecciones de " + calleA.getNombre());
             for(int j = i + 1; j < this.cantCalles; j++) {
                 Calle calleB = this.callesPorIndice.get(j);
                 HashSet<String> calleNodosB = new HashSet<>(calleB.getNodos());
@@ -132,21 +128,28 @@ public class Mapa {
                     String coordenada = calleNodosA.get(indice);
                     if(calleNodosB.contains(coordenada)) {
 
+                       // System.out.println("INTERSECCION  CON " + calleB.getNombre());
+
                         Interseccion interseccion;
 
                         if(!this.intersecciones.containsKey(coordenada)) { // si no existe un objeto interseccion asociado a esa coordenada, crea uno nuevo y lo pone en el Map
                             interseccion = new Interseccion(coordenada);
 
-                            interseccion.addCalle(calleA);
-                            interseccion.addCalle(calleB);
+                            interseccion.setID(indiceIntersecciones);
+
+                            indiceIntersecciones++;
 
                             this.intersecciones.put(coordenada, interseccion);
+
 
                         } else {
 
                             interseccion = this.intersecciones.get(coordenada);
                         }
 
+
+                        interseccion.addCalle(calleA);
+                        interseccion.addCalle(calleB);
 
                         calleA.addInterseccion(interseccion);
                         calleB.addInterseccion(interseccion);
@@ -163,7 +166,6 @@ public class Mapa {
         }
     }
 
-
     public void mostrarIntersecciones() {
         for(String key : this.intersecciones.keySet()) {
             System.out.println(this.intersecciones.get(key).toString());
@@ -174,6 +176,16 @@ public class Mapa {
 
     private void cargarGrafoPesos() {
         this.grafoPesos.cargarGrafoVacio();
+
+        /*a logica sera recorrer todo el grafo de de calles y verificar sus nodos de intersecciones
+        al obtener sus nodos de intersecciones, se verifica si podes ir desde una interseccion X a otra Y
+
+
+
+
+
+        */
+
 
         for(int i = 0; i < this.grafoPesos.getOrden(); i++) {
 

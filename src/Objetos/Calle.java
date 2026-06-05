@@ -102,4 +102,8 @@ public class Calle {
         return velocidad;
     }
 
+
+    public boolean equals(Calle otra) {
+        return (this.nombre == otra.getNombre());
+    }
 }
