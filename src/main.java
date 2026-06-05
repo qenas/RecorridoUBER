@@ -62,6 +62,8 @@ public class main {
 
         //mapa.mostrarIntersecciones();
 
+        mapa.mostrarMatrizDePesos();
+
 
 
 

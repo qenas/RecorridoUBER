@@ -48,6 +48,24 @@ public class Interseccion {
         return cad;
     }
 
+    public String getDescripcion() {
+
+        StringBuilder sb = new StringBuilder("(");
+
+        for(int i = 0; i < calles.size(); i++) {
+
+            sb.append(calles.get(i).getNombre());
+
+            if(i < calles.size()-1) {
+                sb.append(", ");
+            }
+        }
+
+        sb.append(")");
+
+        return sb.toString();
+    }
+
     private String getStringCalles() {
         String nombreCalles = "";
         for(int i = 0; i < this.calles.size(); i++) {

@@ -15,7 +15,8 @@ public class Mapa {
     private GrafoDirigido grafoIntersecciones, grafoPesos;
     private Map<String, Calle> callesPorNombre;
     private ArrayList<Calle> callesPorIndice;
-    private Map<String, Interseccion> intersecciones;
+    private Map<String, Interseccion> interseccionesPorCoordenada;
+    private Map<Integer, Interseccion> interseccionesPorID;
     private int cantCalles;
 
     public Mapa(JSONObject jsonObject) {
@@ -23,7 +24,8 @@ public class Mapa {
         this.callesPorIndice = new ArrayList<>();
         cargarCalles(jsonObject);
 
-        this.intersecciones = new HashMap<>();
+        this.interseccionesPorCoordenada = new HashMap<>();
+        this.interseccionesPorID = new HashMap<>();
 
         this.grafoIntersecciones = new GrafoDirigido(cantCalles);
         cargarGrafoIntersecciones();
@@ -31,7 +33,7 @@ public class Mapa {
 
 
 
-        this.grafoPesos = new GrafoDirigido(this.intersecciones.size());
+        this.grafoPesos = new GrafoDirigido(this.interseccionesPorCoordenada.size());
         cargarGrafoPesos();
 
 
@@ -134,19 +136,22 @@ public class Mapa {
 
                         Interseccion interseccion;
 
-                        if(!this.intersecciones.containsKey(coordenada)) { // si no existe un objeto interseccion asociado a esa coordenada, crea uno nuevo y lo pone en el Map
+                        if(!this.interseccionesPorCoordenada.containsKey(coordenada)) { // si no existe un objeto interseccion asociado a esa coordenada, crea uno nuevo y lo pone en el Map
                             interseccion = new Interseccion(coordenada);
 
                             interseccion.setID(indiceIntersecciones);
 
+                            this.interseccionesPorID.put(indiceIntersecciones, interseccion);
+
                             indiceIntersecciones++;
 
-                            this.intersecciones.put(coordenada, interseccion);
+                            this.interseccionesPorCoordenada.put(coordenada, interseccion);
+
 
 
                         } else {
 
-                            interseccion = this.intersecciones.get(coordenada);
+                            interseccion = this.interseccionesPorCoordenada.get(coordenada);
                         }
 
 
@@ -177,7 +182,7 @@ public class Mapa {
     private void ordenarInterseccionesCalle() {
         for(int i = 0; i < this.callesPorIndice.size(); i++) {
             Calle calle = callesPorIndice.get(i);
-            calle.ordenarIntersecciones(this.intersecciones);
+            calle.ordenarIntersecciones(this.interseccionesPorCoordenada);
             //System.out.println("Intersecciones de " + calle.getNombre() + " ordenadas.");
         }
 
@@ -186,10 +191,10 @@ public class Mapa {
 
 
     public void mostrarIntersecciones() {
-        for(String key : this.intersecciones.keySet()) {
-            System.out.println(this.intersecciones.get(key).toString());
+        for(String key : this.interseccionesPorCoordenada.keySet()) {
+            System.out.println(this.interseccionesPorCoordenada.get(key).toString());
         }
-        System.out.println(this.intersecciones.size());
+        System.out.println(this.interseccionesPorCoordenada.size());
     }
 
 
@@ -236,19 +241,32 @@ public class Mapa {
         }
     }
 
-    public void mostrarMatrizDePesos() {
 
-        for(int i = 0; i < this.cantCalles; i++) {
-            for(int j = 0; j < this.cantCalles; j++) {
+
+    public void mostrarMatrizDePesos() {
+        //this.grafoPesos.muestraGrafo();
+
+        for(int i = 0; i < this.grafoPesos.getOrden(); i++) {
+            for(int j = 0; j < this.grafoPesos.getOrden(); j++) {
+
+                double costo = this.grafoPesos.getArista(i,j);
+
                 if(i != j) {
 
-                    if(this.grafoPesos.getArista(i, j) != this.grafoPesos.getInfinito()) {
-                        System.out.println(this.callesPorIndice.get(i).getNombre() + " -> " + this.callesPorIndice.get(j).getNombre() + ": " + this.grafoPesos.getArista(i,j));
+                    if(costo != GrafoDirigido.getInfinito()) {
+
+                        Interseccion origen = this.interseccionesPorID.get(i);
+                        Interseccion destino = this.interseccionesPorID.get(j);
+
+
+                        System.out.println(origen.getDescripcion() + " -> " + destino.getDescripcion() + " costo: " + costo);
 
                     }
+
                 }
+
             }
         }
-       
+
     }
 }
