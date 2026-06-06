@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 public class Mapa {
-    private GrafoDirigido grafoIntersecciones, grafoPesos;
+    private GrafoDirigido grafoPesos;
     private Map<String, Calle> callesPorNombre;
     private ArrayList<Calle> callesPorIndice;
     private Map<String, Interseccion> interseccionesPorCoordenada;
@@ -27,9 +27,9 @@ public class Mapa {
         this.interseccionesPorCoordenada = new HashMap<>();
         this.interseccionesPorID = new HashMap<>();
 
-        this.grafoIntersecciones = new GrafoDirigido(cantCalles);
-        cargarGrafoIntersecciones();
-        ordenarInterseccionesCalle(); // <- metodo que ordena las intersecciones de las calles, para despues poder hacer las conexiones
+
+        cargarIntersecciones();
+
 
 
 
@@ -88,11 +88,12 @@ public class Mapa {
             if(!callesPorNombre.containsKey(nombreCalle)) { // si la calle todavia no se cargo.
                 Calle calle = new Calle(contadorCalles, nombreCalle, tipoCalle, esManoUnica);
                 calle.addSegmento(segmento);
-                calle.addNodos(segmento);
+                calle.setNodos(segmento);
                 this.callesPorNombre.put(nombreCalle, calle);
                 this.callesPorIndice.add(calle);
                 contadorCalles++;
             } else {
+               // System.out.println("calle encontrada " + nombreCalle);
                 this.callesPorNombre.get(nombreCalle).addNodos(segmento); //agrega los nodos del segmento a la lista de nodos de la calle
                 this.callesPorNombre.get(nombreCalle).addSegmento(segmento); // agrega el nuevo segmento a una calle ya existente
             }
@@ -107,19 +108,19 @@ public class Mapa {
     public void mostrarCalles() {
         for(int i = 0; i < this.callesPorIndice.size(); i++) {
             Calle calle = this.callesPorIndice.get(i);
-            System.out.println(calle.getId() + " Calle: " + calle.getNombre() + ". Tipo: " + calle.getTipo());
-            calle.mostrarSegmentos();
-            //calle.mostrarIntersecciones();
+            if(calle.getNombre().equals("ituzaingo")) {
+                System.out.println(calle.getId() + " Calle: " + calle.getNombre() + ". Tipo: " + calle.getTipo());
+                calle.mostrarSegmentos();
+                //calle.mostrarIntersecciones();
 
+            }
         }
     }
 
 
-    // metodo para cargar el grafo de conexiones y obtener la matriz de adyacencia de 0 y 1;
 
-    private void cargarGrafoIntersecciones() {
-        this.grafoIntersecciones.cargarGrafoVacio();
 
+    private void cargarIntersecciones() {
 
         int indiceIntersecciones = 0;
 
@@ -167,9 +168,6 @@ public class Mapa {
                         calleA.addInterseccion(interseccion);
                         calleB.addInterseccion(interseccion);
 
-
-                        this.grafoIntersecciones.actualizarArista(1, i, j);
-                        this.grafoIntersecciones.actualizarArista(1, j, i); // INTERSECCION SIMETRICA
                         hayInterseccion = true;
                     }
                     indice++;
@@ -178,10 +176,11 @@ public class Mapa {
 
 
             }
+
         }
 
 
-
+        ordenarInterseccionesCalle(); // <- metodo que ordena las intersecciones de las calles, para despues poder hacer las conexiones
 
     }
 
@@ -189,7 +188,7 @@ public class Mapa {
 
         for(int i = 0; i < this.callesPorIndice.size(); i++) {
             Calle calle = callesPorIndice.get(i);
-            calle.ordenarSegmentos();
+
             //System.out.println(calle.getNombre());
 
 
@@ -211,6 +210,7 @@ public class Mapa {
 
     private void cargarGrafoPesos() {
         this.grafoPesos.cargarGrafoVacio();
+
 
         // una vez ordenadas las intersecciones de las calles, se carga el grafo a partir de las calles
 
@@ -238,20 +238,6 @@ public class Mapa {
         }
 
     }
-
-    public void mostrarMatrizDeIntersecciones() {
-        for(int i = 0; i < this.cantCalles; i++) {
-            for(int j = 0; j < this.cantCalles; j++) {
-                if(i != j) {
-
-                    if(this.grafoIntersecciones.getArista(i, j) == 1) {
-                        System.out.println(this.callesPorIndice.get(i).getNombre() + " -> " + this.callesPorIndice.get(j).getNombre());
-                    }
-                }
-            }
-        }
-    }
-
 
 
     public void mostrarMatrizDePesos() {

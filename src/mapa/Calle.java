@@ -28,6 +28,10 @@ public class Calle {
         this.segmentos.add(nuevoSegmento);
     }
 
+    public void setNodos(ArrayList<String> nodos) {
+        this.nodos = nodos;
+    }
+
     public void addNodos(ArrayList<String> nodos) {
         for(String nodo : nodos) {
             if(!this.nodos.contains(nodo)) {
@@ -103,13 +107,19 @@ public class Calle {
     }
 
     public void ordenarIntersecciones(Map<String, Interseccion> mapaIntersecciones) {
-        ArrayList<Interseccion> interseccionesOrdenadas = new ArrayList<>();
+        //ArrayList<Interseccion> interseccionesOrdenadas = new ArrayList<>();
+
+        /*ordenarSegmentos();
 
         for(Segmento segmento : segmentos) {
 
             for(String coord : segmento.getNodos()) {
 
+                System.out.println(coord);
+
+
                 Interseccion i = mapaIntersecciones.get(coord);
+
 
                 if(i != null && !interseccionesOrdenadas.contains(i)) {
                     interseccionesOrdenadas.add(i);
@@ -117,7 +127,32 @@ public class Calle {
             }
         }
 
-        this.intersecciones = interseccionesOrdenadas;
+        /*System.out.println("Intersecciones ordenadas de " + this.nombre);
+
+        for(Interseccion i : this.intersecciones) {
+            System.out.println(i.getID() + " " + i.getCoordenada());
+        }*/
+
+        ArrayList<Interseccion> ordenadas = new ArrayList<>();
+
+        for(Segmento segmento : segmentos) {
+
+            for(String coord : segmento.getNodos()) {
+
+                Interseccion i = mapaIntersecciones.get(coord);
+
+                if(i != null &&
+                        !ordenadas.contains(i)) {
+
+                    ordenadas.add(i);
+
+                }
+            }
+        }
+
+        this.intersecciones = ordenadas;
+
+        //this.intersecciones = interseccionesOrdenadas;
 
     }
 
@@ -129,12 +164,19 @@ public class Calle {
 
         if(actual == null) {
             System.out.println("error al encontrar el primer segmento");
+            return;
         }
 
-        int indiceOrdenados = 0;
-        ordenados.add(indiceOrdenados, actual);
+        System.out.println(
+                "PRIMER SEGMENTO: "
+                        + actual.getInicio()
+                        + " -> "
+                        + actual.getFin()
+        );
 
-        while(indiceOrdenados < segmentos.size()) {
+        ordenados.add(actual);
+
+        while(ordenados.size() < segmentos.size()) {
 
             Segmento siguiente = null;
 
@@ -162,12 +204,19 @@ public class Calle {
     }
 
     public void mostrarSegmentos() {
+        Segmento primero = encontrarPrimerSegmento();
+
+        System.out.println(
+                "PRIMER SEGMENTO: "
+                        + primero.getInicio()
+                        + " -> "
+                        + primero.getFin()
+        );
+
         for(Segmento segmento : this.segmentos) {
+            System.out.println("inicio: " + segmento.getInicio() + " -> final: " + segmento.getFin());
             segmento.mostrarNodos();
         }
-
-
-
     }
 
     private Segmento encontrarPrimerSegmento() {
