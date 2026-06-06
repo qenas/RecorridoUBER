@@ -5,6 +5,8 @@ import grafos.contenedores.ListaDoubleLinkedL;
 import grafos.contenedores.MatrizGrafo;
 import grafos.recursos.OperacionesGD;
 
+import java.util.ArrayList;
+
 public abstract class AbsGrafoD extends AbsGrafo implements OperacionesGD{
 	
 	protected MatrizGrafo matrizCostoF,matrizCaminoF;
@@ -153,12 +155,12 @@ public abstract class AbsGrafoD extends AbsGrafo implements OperacionesGD{
 				}
 			}
 		}
-		System.out.println("Floyd: ");
+		//System.out.println("Floyd: ");
 		for(int i=0;i<ordenGrafo;i++){
 			for(int j=0;j<ordenGrafo;j++){
 				if(i!=j){
 					costoF=(double)matrizCostoF.devolver(i, j);
-					if(costoF!=infinito){System.out.println("Costo m�nimo de "+i+" hasta "+j+": "+costoF);}
+					//if(costoF!=infinito){System.out.println("Costo m�nimo de "+i+" hasta "+j+": "+costoF);}
 				}
 				
 				
@@ -199,30 +201,59 @@ public abstract class AbsGrafoD extends AbsGrafo implements OperacionesGD{
 		if(hayCamino!=infinito) {
 			System.out.print("Camino entre "+origen+" y "+destino+": ");
 			System.out.print(origen);
-			buscarCaminoFloyd(origen,destino);
+			buscarCaminoFloydR(origen,destino);
 			System.out.print(" "+destino);
 			System.out.println();
 		}else {
 			System.out.println("NO hay Camino entre " + origen + " y " + destino);
 		}	
 	}
+
+	public ArrayList<Integer> getCaminoFloyd(int origen, int destino) {
+		double hayCamino = ((Double)this.matrizCostoF.devolver(origen, destino)).doubleValue();
+		ArrayList<Integer> camino = new ArrayList<>();
+		if(hayCamino!=infinito) {
+			camino.add(origen);
+			buscarCaminoFloyd(origen,destino, camino);
+			camino.add(destino);
+		}else {
+			System.out.println("NO hay Camino entre " + origen + " y " + destino);
+		}
+
+
+		return camino;
+	}
 	
-	private void buscarCaminoFloyd(int i, int j){
+	private void buscarCaminoFloyd(int i, int j, ArrayList<Integer> camino){
 		Object valor=matrizCaminoF.devolver(i, j);
 		if(valor!=null){
 			int k=((Integer)valor).intValue();
-			buscarCaminoFloyd(i,k);
-			System.out.print(" "+k);
-			buscarCaminoFloyd(k,j);
+			buscarCaminoFloyd(i,k,camino);
+			//System.out.print(" "+k);
+			camino.add(k);
+
+			buscarCaminoFloyd(k,j, camino);
 		}else{
-			System.out.print(" |");
+			//System.out.print(" |");
 		}
+
+
+
+
 	}
 
 
+	private void buscarCaminoFloydR(int i, int j) {
+		Object valor = matrizCaminoF.devolver(i, j);
+		if (valor != null) {
+			int k = ((Integer) valor).intValue();
+			buscarCaminoFloydR(i, k);
+			System.out.print(" " + k);
+			buscarCaminoFloydR(k, j);
+		} else {
+			System.out.print(" |");
+		}
 
 
-
-
-	
+	}
 }

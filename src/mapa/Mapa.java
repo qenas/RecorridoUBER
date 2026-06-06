@@ -1,4 +1,4 @@
-package Objetos;
+package mapa;
 
 import grafos.grafoDirigido.GrafoDirigido;
 import org.json.JSONArray;
@@ -29,6 +29,7 @@ public class Mapa {
 
         this.grafoIntersecciones = new GrafoDirigido(cantCalles);
         cargarGrafoIntersecciones();
+        ordenarInterseccionesCalle(); // <- metodo que ordena las intersecciones de las calles, para despues poder hacer las conexiones
 
 
 
@@ -39,6 +40,8 @@ public class Mapa {
 
 
     }
+
+
 
     private String normarlizarNombreCalle(String nombreCalle) {
         nombreCalle = Normalizer.normalize(nombreCalle, Normalizer.Form.NFD)
@@ -84,11 +87,17 @@ public class Mapa {
 
             if(!callesPorNombre.containsKey(nombreCalle)) { // si la calle todavia no se cargo.
                 Calle calle = new Calle(contadorCalles, nombreCalle, tipoCalle, nodos, esManoUnica);
+                calle.addSegmento(nodos);
                 this.callesPorNombre.put(nombreCalle, calle);
                 this.callesPorIndice.add(calle);
                 contadorCalles++;
             } else {
+
+
+
+
                 this.callesPorNombre.get(nombreCalle).agregarNodos(nodos); // agrega los nuevos nodos a una calle ya existente
+                this.callesPorNombre.get(nombreCalle).addSegmento(nodos);
             }
 
             this.cantCalles = contadorCalles;
@@ -102,7 +111,7 @@ public class Mapa {
         for(int i = 0; i < this.callesPorIndice.size(); i++) {
             Calle calle = this.callesPorIndice.get(i);
             System.out.println(calle.getId() + " Calle: " + calle.getNombre() + ". Tipo: " + calle.getTipo());
-            //calle.mostrarNodos();
+            calle.mostrarSegmentos();
             //calle.mostrarIntersecciones();
 
         }
@@ -174,7 +183,7 @@ public class Mapa {
             }
         }
 
-        ordenarInterseccionesCalle();
+
 
 
     }
@@ -182,6 +191,9 @@ public class Mapa {
     private void ordenarInterseccionesCalle() {
         for(int i = 0; i < this.callesPorIndice.size(); i++) {
             Calle calle = callesPorIndice.get(i);
+            //System.out.println(calle.getNombre());
+
+
             calle.ordenarIntersecciones(this.interseccionesPorCoordenada);
             //System.out.println("Intersecciones de " + calle.getNombre() + " ordenadas.");
         }
@@ -267,6 +279,23 @@ public class Mapa {
 
             }
         }
+
+    }
+
+
+    public void simularRecorrido(int origen, int destino) { // simulacion por IDs de intersecciones
+        this.grafoPesos.muestraFloyd();
+
+        this.grafoPesos.muestraCaminoFloyd(origen, destino);
+
+        ArrayList<Integer> camino = this.grafoPesos.getCaminoFloyd(origen, destino);
+
+        for(int i = 0; i < camino.size(); i++) {
+            int idInterseccion = camino.get(i);
+            System.out.println(this.interseccionesPorID.get(idInterseccion).toString());
+        }
+
+
 
     }
 }

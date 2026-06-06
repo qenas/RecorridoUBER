@@ -1,6 +1,5 @@
-package Objetos;
+package mapa;
 
-import java.awt.image.AreaAveragingScaleFilter;
 import java.util.ArrayList;
 
 public class Interseccion {

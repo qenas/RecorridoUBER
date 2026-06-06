@@ -1,4 +1,4 @@
-package Objetos;
+package mapa;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -6,6 +6,9 @@ import java.util.Map;
 public class Calle {
     private int id;
     private String nombre, tipo;
+
+    //parche
+    private ArrayList<Segmento> segmentos;
     private ArrayList<String> nodos;
     private ArrayList<Interseccion> intersecciones;
     private boolean manoUnica;
@@ -17,9 +20,13 @@ public class Calle {
         this.nodos = nodos;
         this.manoUnica = manoUnica;
         this.intersecciones = new ArrayList<>();
+        this.segmentos = new ArrayList<>();
     }
 
-
+    public void addSegmento(ArrayList<String> segmento) {
+        Segmento nuevoSegmento = new Segmento(segmento);
+        this.segmentos.add(nuevoSegmento);
+    }
 
     public ArrayList<Interseccion> getIntersecciones() {
         return this.intersecciones;
@@ -124,6 +131,7 @@ public class Calle {
                 Interseccion i = mapaIntersecciones.get(coordenada);
 
 
+
                 if(!interseccionesOrdenadas.contains(i)) {
                     interseccionesOrdenadas.add(i);
                 }
@@ -134,6 +142,15 @@ public class Calle {
         }
 
         this.intersecciones = interseccionesOrdenadas;
+
+    }
+
+    public void mostrarSegmentos() {
+        for(Segmento segmento : this.segmentos) {
+            segmento.mostrarNodos();
+        }
+
+
 
     }
 
