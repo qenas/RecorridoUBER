@@ -5,9 +5,9 @@ import java.util.ArrayList;
 public class Interseccion {
     private int ID;
     private ArrayList<Calle> calles;
-    private String coordenada;
+    private Coordenada coordenada;
 
-    public Interseccion(String coordenada) {
+    public Interseccion(Coordenada coordenada) {
         this.calles = new ArrayList<>();
         this.coordenada = coordenada;
     }
@@ -20,21 +20,17 @@ public class Interseccion {
         return this.ID;
     }
 
+    public void setCalles(ArrayList<Calle> calles) {
+        this.calles = calles;
+    }
+
     public void addCalle(Calle calle) {
-        boolean calleExiste = false;
-
-        for(int i = 0; i < calles.size(); i++) {
-            if(calles.get(i).equals(calle)) {
-                calleExiste = true;
-            }
-        }
-
-        if(!calleExiste) {
-            calles.add(calle);
+        if(!this.calles.contains(calle)) {
+            this.calles.add(calle);
         }
     }
 
-    public String getCoordenada() {
+    public Coordenada getCoordenada() {
         return this.coordenada;
     }
 

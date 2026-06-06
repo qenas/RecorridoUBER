@@ -8,37 +8,21 @@ import org.json.JSONObject;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 public class Mapa {
     private GrafoDirigido grafoPesos;
-    private Map<String, Calle> callesPorNombre;
-    private ArrayList<Calle> callesPorIndice;
-    private Map<String, Interseccion> interseccionesPorCoordenada;
-    private Map<Integer, Interseccion> interseccionesPorID;
-    private int cantCalles;
+    private Map<String, Calle> calles;
+    private Map<Integer, Interseccion> intersecciones;
 
     public Mapa(JSONObject jsonObject) {
-        this.callesPorNombre = new HashMap<>();
-        this.callesPorIndice = new ArrayList<>();
-        cargarCalles(jsonObject);
+        this.intersecciones = new HashMap<>();
+        this.calles = new HashMap<>();
 
-        this.interseccionesPorCoordenada = new HashMap<>();
-        this.interseccionesPorID = new HashMap<>();
+        cargar(jsonObject);
 
-
-        cargarIntersecciones();
-
-
-
-
-
-        this.grafoPesos = new GrafoDirigido(this.interseccionesPorCoordenada.size());
+        this.grafoPesos = new GrafoDirigido(this.intersecciones.size());
         cargarGrafoPesos();
-
-
-
     }
 
 
@@ -66,146 +50,101 @@ public class Mapa {
     }
 
 
-    // metodo para cargar el  map de calles <NombreCalle, Calle>
+    // metodo para cargar el  map de calles <NombreCalle, Calle> y el map de intersecciones
 
-    private void cargarCalles(JSONObject jsonObject) {
-        JSONArray featuresArray = jsonObject.getJSONArray("features");
+    private void cargar(JSONObject jsonObject) {
+        JSONArray features = jsonObject.getJSONArray("features");
+        JSONObject feature;
+
         int contadorCalles = 0;
+        int contadorIntersecciones = 0;
 
-        for(int i = 0; i < featuresArray.length(); i++) {
-            JSONObject featureIndex = featuresArray.getJSONObject(i);
-
-            JSONObject featureProperties = featureIndex.getJSONObject("properties");
-            String nombreCalle = featureProperties.optString("name", "S/N");
-            String tipoCalle = featureProperties.optString("highway", "residential");
-            boolean esManoUnica = featureProperties.optString("oneway", "no").equals("yes");
+        for(int i = 0; i < features.length(); i++) {
+            feature = features.getJSONObject(i);
+            JSONObject geom = feature.getJSONObject("geometry");
+            JSONObject properties = feature.getJSONObject("properties");
+            String nombreCalle = properties.optString("name", "s/n");
 
             nombreCalle = normarlizarNombreCalle(nombreCalle);
 
+            if (geom.getString("type").equals("LineString") && nombreCalle!=null) { //Verificacion de que el feature sea lineString y la calle tenga nombre
+                JSONArray coords = geom.getJSONArray("coordinates");
+                for (int j = 0; j < coords.length(); j++) {
+                    Coordenada coord = new Coordenada((coords.getJSONArray(j)).getDouble(0), (coords.getJSONArray(j)).getDouble(1));
+                    String tipoCalle = properties.optString("highway", "residential");
 
-            ArrayList<String> segmento = getNodos(featureIndex.getJSONObject("geometry"));
+                    // Lógica de DOBLE MANO:
+                    // Si 'oneway' es 'yes', es mano única.
+                    // Si es 'no' o no existe el tag, es doble mano.
 
-            if(!callesPorNombre.containsKey(nombreCalle)) { // si la calle todavia no se cargo.
-                Calle calle = new Calle(contadorCalles, nombreCalle, tipoCalle, esManoUnica);
-                calle.addSegmento(segmento);
-                calle.setNodos(segmento);
-                this.callesPorNombre.put(nombreCalle, calle);
-                this.callesPorIndice.add(calle);
-                contadorCalles++;
-            } else {
-               // System.out.println("calle encontrada " + nombreCalle);
-                this.callesPorNombre.get(nombreCalle).addNodos(segmento); //agrega los nodos del segmento a la lista de nodos de la calle
-                this.callesPorNombre.get(nombreCalle).addSegmento(segmento); // agrega el nuevo segmento a una calle ya existente
+                    boolean esManoUnica = properties.optString("oneway", "no").equals("yes");
+                    ArrayList<Calle> callesInterseccion = new ArrayList<>();
+
+                    Calle calle = new Calle(contadorCalles, nombreCalle, tipoCalle, esManoUnica);
+                    callesInterseccion.add(calle);
+
+                    Interseccion interseccion = new Interseccion(coord);
+                    interseccion.setCalles(callesInterseccion);
+
+                    if(!this.calles.containsKey(nombreCalle)) {
+                        this.calles.put(nombreCalle, calle);
+                        contadorCalles++;
+                    }
+
+                    int pos = buscarInterseccion(this.intersecciones, interseccion);
+
+
+                    if(pos==-1) {
+                        interseccion.setID(contadorIntersecciones);
+                        this.intersecciones.put(contadorIntersecciones, interseccion);
+                        contadorIntersecciones++;
+                    } else {
+                        this.intersecciones.get(pos).addCalle(calle);
+                    }
+
+                }
             }
-
-            this.cantCalles = contadorCalles;
         }
-
     }
 
+
+    private int buscarInterseccion(Map<Integer, Interseccion> mapa, Interseccion busc){
+        boolean detectado = false;
+        int pos=0;
+
+        for(Integer i : mapa.keySet()) {
+            Interseccion interseccion = mapa.get(i);
+            double dlon = interseccion.getCoordenada().getLongitud() - busc.getCoordenada().getLongitud();
+            double dlat = interseccion.getCoordenada().getLatitud() - busc.getCoordenada().getLatitud();
+
+            if(dlon == 0 && dlat == 0) {
+                detectado=true;
+                pos = i;
+            }
+        }
+
+        if(detectado) {
+            return pos;
+        }
+
+        return -1;
+
+    }
 
 
     public void mostrarCalles() {
-        for(int i = 0; i < this.callesPorIndice.size(); i++) {
-            Calle calle = this.callesPorIndice.get(i);
-            if(calle.getNombre().equals("ituzaingo")) {
-                System.out.println(calle.getId() + " Calle: " + calle.getNombre() + ". Tipo: " + calle.getTipo());
-                calle.mostrarSegmentos();
-                //calle.mostrarIntersecciones();
-
-            }
+        for(String nombreCalle : this.calles.keySet()) {
+            Calle calle = this.calles.get(nombreCalle);
+            System.out.println(calle.getId() + " Calle: " + calle.getNombre() + ". Tipo: " + calle.getTipo());
         }
+
+        System.out.println(this.calles.size());
     }
 
 
 
 
-    private void cargarIntersecciones() {
 
-        int indiceIntersecciones = 0;
-
-        for(int i = 0; i < this.cantCalles; i++) {
-            Calle calleA = this.callesPorIndice.get(i);
-            ArrayList<String> calleNodosA = calleA.getNodos();
-            //System.out.println("Analizando intersecciones de " + calleA.getNombre());
-            for(int j = i + 1; j < this.cantCalles; j++) {
-                Calle calleB = this.callesPorIndice.get(j);
-                HashSet<String> calleNodosB = new HashSet<>(calleB.getNodos());
-                boolean hayInterseccion = false;
-
-                int indice = 0;
-
-                while(indice < calleNodosA.size() && !hayInterseccion) {
-                    String coordenada = calleNodosA.get(indice);
-                    if(calleNodosB.contains(coordenada)) {
-
-                       // System.out.println("INTERSECCION  CON " + calleB.getNombre());
-
-                        Interseccion interseccion;
-
-                        if(!this.interseccionesPorCoordenada.containsKey(coordenada)) { // si no existe un objeto interseccion asociado a esa coordenada, crea uno nuevo y lo pone en el Map
-                            interseccion = new Interseccion(coordenada);
-
-                            interseccion.setID(indiceIntersecciones);
-
-                            this.interseccionesPorID.put(indiceIntersecciones, interseccion);
-
-                            indiceIntersecciones++;
-
-                            this.interseccionesPorCoordenada.put(coordenada, interseccion);
-
-
-
-                        } else {
-
-                            interseccion = this.interseccionesPorCoordenada.get(coordenada);
-                        }
-
-
-                        interseccion.addCalle(calleA);
-                        interseccion.addCalle(calleB);
-
-                        calleA.addInterseccion(interseccion);
-                        calleB.addInterseccion(interseccion);
-
-                        hayInterseccion = true;
-                    }
-                    indice++;
-                }
-
-
-
-            }
-
-        }
-
-
-        ordenarInterseccionesCalle(); // <- metodo que ordena las intersecciones de las calles, para despues poder hacer las conexiones
-
-    }
-
-    private void ordenarInterseccionesCalle() {
-
-        for(int i = 0; i < this.callesPorIndice.size(); i++) {
-            Calle calle = callesPorIndice.get(i);
-
-            //System.out.println(calle.getNombre());
-
-
-            calle.ordenarIntersecciones(this.interseccionesPorCoordenada);
-            //System.out.println("Intersecciones de " + calle.getNombre() + " ordenadas.");
-        }
-
-    }
-
-
-
-    public void mostrarIntersecciones() {
-        for(String key : this.interseccionesPorCoordenada.keySet()) {
-            System.out.println(this.interseccionesPorCoordenada.get(key).toString());
-        }
-        System.out.println(this.interseccionesPorCoordenada.size());
-    }
 
 
     private void cargarGrafoPesos() {
@@ -214,28 +153,7 @@ public class Mapa {
 
         // una vez ordenadas las intersecciones de las calles, se carga el grafo a partir de las calles
 
-        for(int i = 0; i < this.callesPorIndice.size(); i++) {
-            Calle calle = this.callesPorIndice.get(i);
-            ArrayList<Interseccion> interseccionesCalle = calle.getIntersecciones();
 
-
-            for(int j = 0; j < interseccionesCalle.size()-1; j++) {
-
-                Interseccion origen = interseccionesCalle.get(j);
-                Interseccion destino = interseccionesCalle.get(j+1);
-
-                double costoCalle = calle.getVelocidad(); // a partir del tipo de calle, devuelve un valor especifico
-
-                if(calle.isManoUnica()) {
-                    grafoPesos.actualizarArista(costoCalle, origen.getID(), destino.getID());
-                } else {
-                    grafoPesos.actualizarArista(costoCalle, origen.getID(), destino.getID());
-                    grafoPesos.actualizarArista(costoCalle, destino.getID(), origen.getID());
-                }
-
-            }
-
-        }
 
     }
 
@@ -252,8 +170,8 @@ public class Mapa {
 
                     if(costo != GrafoDirigido.getInfinito()) {
 
-                        Interseccion origen = this.interseccionesPorID.get(i);
-                        Interseccion destino = this.interseccionesPorID.get(j);
+                        Interseccion origen = this.intersecciones.get(i);
+                        Interseccion destino = this.intersecciones.get(j);
 
 
                         System.out.println(origen.getDescripcion() + " -> " + destino.getDescripcion() + " costo: " + costo);
@@ -277,7 +195,7 @@ public class Mapa {
 
         for(int i = 0; i < camino.size(); i++) {
             int idInterseccion = camino.get(i);
-            System.out.println(this.interseccionesPorID.get(idInterseccion).toString());
+            System.out.println(this.intersecciones.get(idInterseccion).toString());
         }
 
 
