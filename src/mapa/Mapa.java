@@ -56,10 +56,12 @@ public class Mapa {
         JSONArray features = jsonObject.getJSONArray("features");
         JSONObject feature;
 
+        Map<Integer, Interseccion> aux = new HashMap<>();
+
         int contadorCalles = 0;
         int contadorCoordenadas = 0;
 
-        for(int i = 0; i < features.length(); i++) {
+        for (int i = 0; i < features.length(); i++) {
             feature = features.getJSONObject(i);
             JSONObject geom = feature.getJSONObject("geometry");
             JSONObject properties = feature.getJSONObject("properties");
@@ -67,7 +69,7 @@ public class Mapa {
 
             nombreCalle = normarlizarNombreCalle(nombreCalle);
 
-            if (geom.getString("type").equals("LineString") && nombreCalle!=null) { //Verificacion de que el feature sea lineString y la calle tenga nombre
+            if (geom.getString("type").equals("LineString") && nombreCalle != null) { //Verificacion de que el feature sea lineString y la calle tenga nombre
                 JSONArray coords = geom.getJSONArray("coordinates");
                 for (int j = 0; j < coords.length(); j++) {
                     Coordenada coord = new Coordenada((coords.getJSONArray(j)).getDouble(0), (coords.getJSONArray(j)).getDouble(1));
@@ -78,47 +80,56 @@ public class Mapa {
                     // Si es 'no' o no existe el tag, es doble mano.
 
                     boolean esManoUnica = properties.optString("oneway", "no").equals("yes");
-                    ArrayList<Calle> callesInterseccion = new ArrayList<>();
 
-                    Calle calle = new Calle(contadorCalles, nombreCalle, tipoCalle, esManoUnica);
-                    callesInterseccion.add(calle);
+                    Calle calle;
 
                     Interseccion interseccion = new Interseccion(coord);
-                    interseccion.setCalles(callesInterseccion);
 
-                    if(!this.calles.containsKey(nombreCalle)) {
+                    if (!this.calles.containsKey(nombreCalle)) { // carga la cantidad de calles unicas
+                        calle = new Calle(contadorCalles, nombreCalle, tipoCalle, esManoUnica);
                         this.calles.put(nombreCalle, calle);
                         contadorCalles++;
+                    } else {
+                        calle = this.calles.get(nombreCalle);
                     }
 
-                    int pos = buscarIntersecciones(this.intersecciones, interseccion);
+                    int pos = buscarCoordenada(aux, interseccion);
 
 
-                    if(pos==-1) {
+                    if (pos == -1) { // no existe una coordenada
                         interseccion.setID(contadorCoordenadas);
-                        this.intersecciones.put(contadorCoordenadas, interseccion);
+                        interseccion.addCalle(calle);
+                        aux.put(contadorCoordenadas, interseccion);
                         contadorCoordenadas++;
                     } else {
-                        this.intersecciones.get(pos).addCalle(calle);
+                        aux.get(pos).addCalle(calle);
                     }
 
                 }
             }
         }
 
-        int contadorIntersecciones = 0;
+        depurarIntersecciones(aux); // depura las intesercciones con menos de 2 calles asociadas y las carga en el mapa 'intersecciones'
 
-        for(Integer id : this.intersecciones.keySet()) {
-            Interseccion coordenada = this.intersecciones.get(id);
+    }
 
-            if(coordenada.getCantCalles() < 2) {
+    private void depurarIntersecciones(Map<Integer, Interseccion> mapa) {
+
+        int indiceIntersecciones = 0;
+
+        for(Integer i : mapa.keySet()) {
+            Interseccion interseccion = mapa.get(i);
+            if(interseccion.getCantCalles() > 1) {
+                interseccion.setID(indiceIntersecciones);
+                this.intersecciones.put(indiceIntersecciones, interseccion);
+                indiceIntersecciones++;
+            }
         }
-
 
     }
 
 
-    private int buscarIntersecciones(Map<Integer, Interseccion> mapa, Interseccion busc){
+    private int buscarCoordenada(Map<Integer, Interseccion> mapa, Interseccion busc){
         boolean detectado = false;
         int pos=0;
 

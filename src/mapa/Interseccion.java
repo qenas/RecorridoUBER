@@ -68,7 +68,7 @@ public class Interseccion {
     private String getStringCalles() {
         String nombreCalles = "";
         for(int i = 0; i < this.calles.size(); i++) {
-            nombreCalles += this.calles.get(i).getNombre() + " ";
+            nombreCalles += this.calles.get(i).getNombre() + " / ";
         }
         return nombreCalles;
 
