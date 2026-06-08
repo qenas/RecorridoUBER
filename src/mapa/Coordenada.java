@@ -1,5 +1,7 @@
 package mapa;
 
+import java.util.Objects;
+
 public class Coordenada {
     private double latitud;
     private double longitud;
@@ -47,5 +49,11 @@ public class Coordenada {
             return (this.latitud==cor2.getLatitud()) && (this.longitud==cor2.getLongitud());
         }
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(latitud, longitud);
+    }
+
 
 }

@@ -18,7 +18,7 @@ public class main {
 
         mapa.mostrarMatrizDePesos();
 
-
+        //mapa.simularRecorrido(415, 511);
 
     }
 }

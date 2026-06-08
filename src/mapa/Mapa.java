@@ -13,7 +13,8 @@ import java.util.Map;
 public class Mapa {
     private GrafoDirigido grafoPesos;
     private Map<String, Calle> calles;
-    private Map<Integer, Interseccion> intersecciones;
+    private Map<Coordenada, Interseccion> intersecciones;
+     // coordendas en string
 
     public Mapa(JSONObject jsonObject) {
         this.intersecciones = new HashMap<>();
@@ -57,6 +58,7 @@ public class Mapa {
         JSONObject feature;
 
         Map<Integer, Interseccion> aux = new HashMap<>();
+
 
         int contadorCalles = 0;
         int contadorCoordenadas = 0;
@@ -105,6 +107,7 @@ public class Mapa {
                         aux.get(pos).addCalle(calle);
                     }
 
+
                 }
             }
         }
@@ -120,8 +123,9 @@ public class Mapa {
         for(Integer i : mapa.keySet()) {
             Interseccion interseccion = mapa.get(i);
             if(interseccion.getCantCalles() > 1) {
+                //System.out.println(indiceIntersecciones);
                 interseccion.setID(indiceIntersecciones);
-                this.intersecciones.put(indiceIntersecciones, interseccion);
+                this.intersecciones.put(interseccion.getCoordenada(), interseccion);
                 indiceIntersecciones++;
             }
         }
@@ -163,11 +167,13 @@ public class Mapa {
     }
 
     public void mostrarIntersecciones() {
-        for(int i = 0; i < this.intersecciones.size(); i++) {
-            Interseccion interseccion = this.intersecciones.get(i);
+
+        for(Coordenada coord : this.intersecciones.keySet()) {
+            Interseccion interseccion = this.intersecciones.get(coord);
             System.out.println(interseccion.toString());
         }
         System.out.println(this.intersecciones.size());
+
     }
 
 
@@ -181,80 +187,70 @@ public class Mapa {
 
         JSONArray features = jsonObject.getJSONArray("features");
 
-
-
-
         for(int i = 0; i < features.length(); i++) {
             JSONObject f = features.getJSONObject(i); // obtiene la calle
+            JSONObject properties = f.getJSONObject("properties");
             JSONArray coords = f.getJSONObject("geometry").getJSONArray("coordinates"); // obtiene las coordenadas de la calle
 
-            int index = 0, u = -1, v = -1;
-            Coordenada coordIni = null, coordFin = null;
-            boolean encontroU = false;
-            boolean encontroV = false;
+            String nombreCalle = properties.optString("name", "s/n");
 
+            nombreCalle = normarlizarNombreCalle(nombreCalle);
 
+            if(this.calles.containsKey(nombreCalle)) {
+                Calle calle = this.calles.get(nombreCalle);
+                boolean esManoUnica = calle.isManoUnica();
 
-            while(index<coords.length() && !encontroU) {
-                coordIni = new Coordenada((coords.getJSONArray(index)).getDouble(0), (coords.getJSONArray(index)).getDouble(1));
-                for(int j = 0; j < this.intersecciones.size(); j++) {
-                    Interseccion interU = this.intersecciones.get(j);
-                    Coordenada coordU = interU.getCoordenada();
-                    if(coordU.equals(coordIni)) {
-                        u = interU.getID();
-                        encontroU = true;
-                        break;
+                Interseccion ultimaInterseccion = null;
+
+                Coordenada coordAnterior = null;
+
+                for(int j = 0; j < coords.length(); j++) {
+                    JSONArray punto = coords.getJSONArray(j);
+
+                    Coordenada coordActual = new Coordenada(punto.getDouble(0), punto.getDouble(1));
+
+                    if(this.intersecciones.containsKey(coordActual)) {
+                        //System.out.println("hay interseccion asociada a esa coordenada");
+                        Interseccion interseccionActual = this.intersecciones.get(coordActual);
+                        if(interseccionActual != null) {
+                            //System.out.println("entra al if");
+                            if(ultimaInterseccion == null) {
+                                ultimaInterseccion = interseccionActual;
+                            } else {
+                               // System.out.println("entra al else");
+                                int u = ultimaInterseccion.getID();
+                                int v = interseccionActual.getID();
+                                //System.out.println("u: " + u + " v: " + v);
+
+                                if(u != v) {
+                                    double costo = calle.getVelocidad();
+
+                                    this.grafoPesos.actualizarArista(costo, u, v);
+
+                                    if(!esManoUnica) {
+                                        this.grafoPesos.actualizarArista(costo, v, u);
+                                    }
+                                }
+                                ultimaInterseccion = interseccionActual;
+                            }
+                        }
+                    } else {
+                        //System.out.println("no hay interseccion asociada a esa coordenada");
                     }
+                    coordAnterior = coordActual;
+
                 }
-                index++;
             }
-            while(index<coords.length() && !encontroV) {
-                coordFin = new Coordenada((coords.getJSONArray(index)).getDouble(0), (coords.getJSONArray(index)).getDouble(1));
-                for(int j = 0; j < this.intersecciones.size(); j++) {
-                    Interseccion interV = this.intersecciones.get(j);
-                    Coordenada coordV = interV.getCoordenada();
-                    if(coordV.equals(coordFin)) {
-                        v = interV.getID();
-                        encontroV = true;
-                        break;
-                    }
-                }
-                index++;
-            }
-
-
-
-            if(encontroU && encontroV) {
-                //System.out.println(encontroU + " " + encontroV);
-                Interseccion intIni=this.intersecciones.get(u), intFin=this.intersecciones.get(v);
-                Calle calle = intIni.calleCompartida(intFin);
-
-                double costo = coordIni.haversine(coordFin) / calle.getVelocidad();
-
-                this.grafoPesos.actualizarArista(costo, u, v);
-
-                if(!calle.isManoUnica()) {
-                    this.grafoPesos.actualizarArista(costo, v, u);
-                }
-
-            }
-
-
-
         }
-
-
-
-
     }
 
 
 
 
     public void mostrarMatrizDePesos() {
-        //this.grafoPesos.muestraGrafo();
+        this.grafoPesos.muestraGrafo();
 
-        for(int i = 0; i < this.grafoPesos.getOrden(); i++) {
+        /*for(int i = 0; i < this.grafoPesos.getOrden(); i++) {
 
             for(int j = 0; j < this.grafoPesos.getOrden(); j++) {
 
@@ -277,7 +273,7 @@ public class Mapa {
                 }
 
             }
-        }
+        }*/
 
     }
 
