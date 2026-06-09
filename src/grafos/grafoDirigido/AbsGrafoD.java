@@ -3,6 +3,7 @@ package grafos.grafoDirigido;
 import grafos.contenedores.AbsGrafo;
 import grafos.contenedores.ListaDoubleLinkedL;
 import grafos.contenedores.MatrizGrafo;
+import grafos.contenedores.PilaSLinkedList;
 import grafos.recursos.OperacionesGD;
 
 import java.util.ArrayList;
@@ -195,6 +196,33 @@ public abstract class AbsGrafoD extends AbsGrafo implements OperacionesGD{
 
 		return verticeOptimo;
 	}
+
+	public PilaSLinkedList retornaCaminoDijkstra(int startVertex, int endVertex) {
+		int w;
+		PilaSLinkedList pilaCaminos = new PilaSLinkedList();
+		Dijkstra(startVertex);
+
+		if (endVertex!=startVertex){
+			w=(int)this.listaCamino.devolver(endVertex);
+			pilaCaminos.meter(endVertex);
+
+			do{
+				pilaCaminos.meter(w);
+				w=(int)this.listaCamino.devolver(w);
+			}while(w!=-1);//recordemos que al inicializar cambiamos todos los -1 salvo el startVertex
+		}
+		return pilaCaminos;
+	}
+
+	public double getDistanciaDijkstra(int endVertex) {
+		double distancia = (double) listaDistancia.devolver(endVertex);
+
+		return distancia;
+
+
+	}
+
+
 
 	public double getAristaFloyd(int origen, int destino) {
 		return (double) this.matrizCostoF.devolver(origen, destino);

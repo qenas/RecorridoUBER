@@ -2,6 +2,8 @@ import mapa.Mapa;
 import gestion.JSONLector;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class main {
     public static void main(String[] args) {
 
@@ -11,13 +13,19 @@ public class main {
 
         Mapa mapa = new Mapa(salta);
 
+        UberApp uberApp = new UberApp(mapa);
+
+
+
+
+
         //mapa.mostrarCalles();
 
-        //mapa.mostrarIntersecciones();
+        mapa.mostrarIntersecciones();
 
         //mapa.mostrarMatrizDePesos();
 
-        mapa.simularRecorrido(415, 511);
+        //mapa.simularRecorrido(415, 511);
 
     }
 }
