@@ -30,12 +30,41 @@ public class Viaje {
         this.estado = estado;
     }
 
+    public Chofer getChofer() {
+        return this.chofer;
+    }
+
+    public PilaSLinkedList getCaminoAlUsuario() {
+        return caminoAlUsuario;
+    }
+
+    public PilaSLinkedList getCaminoAlDestino() {
+        return caminoAlDestino;
+    }
+
+    public Interseccion getOrigen() {
+        return this.origen;
+    }
+
+    public Interseccion getDestino() {
+        return this.destino;
+    }
+
+    public Usuario getUsuario() {
+        return this.usuario;
+    }
+
     public void cargarCaminoUsuario(Mapa mapa) {
-        PilaSLinkedList aux = new PilaSLinkedList();
+        /* Primero se carga el camino desde la posición del usuario a su destino.
+        * Después se obtiene el grafo del mapa y se realiza Dijkstra desde la posición del chofer
+        * al resto de nodos. Una vez realizado el algoritmo, se carga el camino óptimo desde la
+        * posición del chofer hasta la posición del usuario.
+        * */
 
-        mapa.
+        GrafoDirigido grafoMapa = mapa.getGrafoPesos();
+        grafoMapa.realizarDijkstra(this.chofer.getPosicion().getID());
 
-
+        this.caminoAlUsuario = grafoMapa.retornaCaminoDijkstra(this.chofer.getIdChofer(), this.usuario.getOrigen().getID());
     }
 
     public void cargarCaminoDestino(Mapa mapa) {
@@ -48,7 +77,6 @@ public class Viaje {
         * */
 
         this.caminoAlDestino = grafoMapa.retornaCaminoDijkstra(this.origen.getID(), this.destino.getID());
-
     }
 
 

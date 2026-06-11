@@ -113,9 +113,11 @@ public class Usuario {
 
 
                 viaje = new Viaje(this, chofer, origen, destino); // el destino podria ser generado aleatoriamente desde aca
-                borrarColaChoferes();
+
             }
         }
+
+        borrarColaChoferes();
 
         return  viaje;
     }

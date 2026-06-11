@@ -39,6 +39,15 @@ public class UberApp {
         generarUsuario();
         Usuario usuario = this.usuarios.get(0);
         Viaje viaje = usuario.pedirUber();
+        viaje.cargarCaminoUsuario(mapa);
+        viaje.cargarCaminoDestino(mapa);
+
+        if(viaje != null) {
+            Chofer chofer = viaje.getChofer();
+            chofer.trabajar(viaje, this.mapa);
+        } else {
+            System.out.println("el usuario " + usuario.getIdUsuario() + " no logro encontrar chofer.");
+        }
 
     }
 
