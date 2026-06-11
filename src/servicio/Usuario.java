@@ -13,13 +13,10 @@ public class Usuario {
     private ColaChoferes colaChoferes;
     private Interseccion origen, destino;
 
-    private ArrayList<Double> listaETA;
-
 
     public Usuario(int idUsuario) {
         this.idUsuario = idUsuario;
         this.colaChoferes = new ColaChoferes();
-        this.listaETA = new ArrayList<>();
 
     }
 
@@ -53,7 +50,12 @@ public class Usuario {
             Interseccion posicionChofer = chofer.getPosicion();
             double costo = grafoMapa.getDistanciaDijkstra(posicionChofer.getID()); //para cada chofer, le calcula el ETA
 
-            chofer.setETA(costo);
+            PilaSLinkedList camino = grafoMapa.retornaCaminoDijkstra(this.origen.getID(), posicionChofer.getID());
+
+            //ETA = (costo * cant de nodos del camino) / 60
+            double eta = (costo * camino.tamanio()) / 60;
+
+            chofer.setETA(eta);
 
             this.colaChoferes.meter(chofer);
         }
@@ -106,9 +108,10 @@ public class Usuario {
                 /* Cómo funciona el sistema luego de que un chofer acepte el viaje del usuario?
                 * -El chofer que aceptó queda guardado en la variable "chofer".
                 *
-                * -Se crea un objeto de tipo Viaje el cual almacena: el usuario que pidió el uber,
-                * el chofer que le aceptó el viaje y las posiciones de origen y destino de su viaje.
-                *
+                * -Se crea un objeto de tipo Viaje el cual almacena:
+                *   el usuario que pidió el uber,
+                *   el chofer que le aceptó el viaje
+                *   las posiciones de origen y destino de su viaje
                 * */
 
 

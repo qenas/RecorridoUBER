@@ -45,5 +45,16 @@ public class PilaSLinkedList implements OperacionesCL1 {
 			System.out.println("Error muestra. Pila vacia");
 		}
 	}
+
+	public int tamanio() {
+		int cont = 0;
+		Nodo aux = this.pila;
+		while(aux != null) {
+			aux = aux.getNextNodo();
+			cont++;
+		}
+
+		return cont;
+	}
 	
 }

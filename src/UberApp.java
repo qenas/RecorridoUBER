@@ -1,7 +1,5 @@
-import mapa.Interseccion;
 import mapa.Mapa;
 import servicio.Chofer;
-import servicio.ColaChoferes;
 import servicio.Usuario;
 import servicio.Viaje;
 
@@ -45,6 +43,7 @@ public class UberApp {
         if(viaje != null) {
             Chofer chofer = viaje.getChofer();
             chofer.trabajar(viaje, this.mapa);
+            viaje.setEstado(true);
         } else {
             System.out.println("el usuario " + usuario.getIdUsuario() + " no logro encontrar chofer.");
         }

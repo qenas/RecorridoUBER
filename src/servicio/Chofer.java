@@ -89,7 +89,15 @@ public class Chofer {
         while(!caminoRecogida.estaVacia()) {
             int interseccionID = (int) caminoRecogida.sacar();
             this.posicion = mapa.getInterseccion(interseccionID);
+
+
             System.out.println(this.posicion.toString());
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         if(posicion.equals(viaje.getOrigen())) {
@@ -109,7 +117,15 @@ public class Chofer {
         while(!caminoViaje.estaVacia()) {
             int interseccionID = (int) caminoViaje.sacar();
             this.posicion = mapa.getInterseccion(interseccionID);
+
+
             System.out.println(this.posicion.toString());
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         if(posicion.equals(viaje.getDestino())) {
