@@ -1,6 +1,6 @@
 grafos\contenedores\PilaSLinkedList.class
-UberApp.class
 grafos\contenedores\Lista1DLinkedL.class
+servicio\UberApp.class
 grafos\grafoDirigido\AbsGrafoD.class
 grafos\recursos\OperacionesCL2.class
 mapa\Interseccion.class
@@ -34,6 +34,7 @@ grafos\contenedores\Lista0DLinkedL.class
 grafos\recursos\OperacionesGD.class
 grafos\contenedores\MatrizGrafo.class
 grafos\recursos\OperacionesG.class
+interfaz\Controlador.class
 interfaz\Interfaz.class
 servicio\Viaje.class
 servicio\Usuario.class

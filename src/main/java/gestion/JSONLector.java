@@ -7,7 +7,7 @@ import java.nio.file.Path;
 
 public class JSONLector {
 
-    public JSONObject getJSONObject(String path) {
+    public static JSONObject getJSONObject(String path) {
         JSONObject json = null;
         try {
             String pathAux = Files.readString(Path.of(path));

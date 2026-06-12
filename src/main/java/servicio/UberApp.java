@@ -1,7 +1,6 @@
+package servicio;
+
 import mapa.Mapa;
-import servicio.Chofer;
-import servicio.Usuario;
-import servicio.Viaje;
 
 import java.util.ArrayList;
 
@@ -27,14 +26,29 @@ public class UberApp {
         Chofer nuevoChofer = new Chofer(this.choferes.size(), false);
         nuevoChofer.cargarPosicion(this.mapa);
         this.choferes.add(nuevoChofer);
+        actualizarUsuarios();
+    }
+
+    private void actualizarUsuarios() {
+        for(Usuario usuario : this.usuarios) {
+            usuario.actualizarColaChoferes(this.choferes, this.mapa);
+        }
+    }
+
+    public Usuario getUltimoUsuario() {
+        return this.usuarios.get(this.usuarios.size() - 1);
+    }
+
+    public Chofer getUltimoChofer() {
+        return this.choferes.get(this.choferes.size() - 1);
     }
 
     public void simular() {
-        for(int i = 0; i < 5; i++) {
+        /*for(int i = 0; i < 5; i++) {
             generarChofer();
-        }
+        }*/
 
-        generarUsuario();
+        //generarUsuario();
         Usuario usuario = this.usuarios.get(0);
         Viaje viaje = usuario.pedirUber();
         viaje.cargarCaminoUsuario(mapa);

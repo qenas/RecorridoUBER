@@ -27,8 +27,6 @@ public class Mapa {
         realizarAlgoritmosGrafo();
     }
 
-
-
     private String normarlizarNombreCalle(String nombreCalle) {
         nombreCalle = Normalizer.normalize(nombreCalle, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}", "");
