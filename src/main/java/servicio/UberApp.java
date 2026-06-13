@@ -41,6 +41,10 @@ public class UberApp {
         }
     }
 
+    public void addNuevoViaje(Viaje viaje) {
+        this.viajes.add(viaje);
+    }
+
     public Viaje getUltimoViaje() {
         return this.viajes.get(this.viajes.size() - 1);
     }
@@ -53,26 +57,6 @@ public class UberApp {
         return this.choferes.get(this.choferes.size() - 1);
     }
 
-    public void simular() {
-        /*for(int i = 0; i < 5; i++) {
-            generarChofer();
-        }*/
-
-        generarUsuario();
-        Usuario usuario = this.usuarios.get(0);
-        Viaje viaje = usuario.pedirUber();
-        viaje.cargarCaminoUsuario(mapa);
-        viaje.cargarCaminoDestino(mapa);
-        this.viajes.add(viaje);
-        if(viaje != null) {
-            Chofer chofer = viaje.getChofer();
-            //chofer.trabajar(viaje, this.mapa);
-            viaje.setFinalizado(true);
-        } else {
-            System.out.println("el usuario " + usuario.getIdUsuario() + " no logro encontrar chofer.");
-        }
-
-    }
 
 
 }

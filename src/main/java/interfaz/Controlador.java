@@ -65,9 +65,9 @@ public class Controlador {
         Viaje viaje = usuario.pedirUber();
         log("El usuario " + usuario.getIdUsuario() + " pidio un uber en " + usuario.getOrigen().getDescripcion() + ".");
         if(viaje != null) {
+            uberApp.addNuevoViaje(viaje);
             viaje.cargarCaminoDestino(uberApp.getMapa());
             viaje.cargarCaminoUsuario(uberApp.getMapa());
-            viaje.setFinalizado(false);
 
             Chofer chofer = viaje.getChofer();
             log("El chofer " + chofer.getIdChofer() + " acepto el viaje del usuario " + usuario.getIdUsuario() + ".");

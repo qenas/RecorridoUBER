@@ -15,7 +15,7 @@ public class main {
 
         UberApp uberApp = new UberApp(mapa);
 
-        uberApp.simular();
+
 
 
 
