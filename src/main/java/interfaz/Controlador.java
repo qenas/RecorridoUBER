@@ -45,7 +45,12 @@ public class Controlador {
     private TextArea txtEventos;
 
     private void log(String mensaje) {
-        txtEventos.appendText(mensaje + "\n");
+
+        Platform.runLater(() -> {
+            txtEventos.appendText(mensaje + "\n");
+        });
+
+
     }
 
     @FXML
@@ -64,14 +69,6 @@ public class Controlador {
     }
 
 
-    //codigo para testear el movimiento de objetos en la interfaz.
-    @FXML
-    private Circle auto;
-
-    @FXML
-    private Circle destino;
-
-
     @FXML
     private void simularViaje() {
         //uberApp.simular();
@@ -86,37 +83,17 @@ public class Controlador {
 
             Chofer chofer = viaje.getChofer();
             log("El chofer " + chofer.getIdChofer() + " acepto el viaje del usuario " + usuario.getIdUsuario() + ".");
-            comenzarRecogida(viaje, uberApp.getMapa(), chofer);
-
-            if(chofer.getPosicion().equals(usuario.getOrigen())) { // Si el chofer llego a la posicion del usuario.
-                log("El chofer " + chofer.getIdChofer() + " ha llegado a recoger al usuario " + usuario.getIdUsuario() + ".");
-                comenzarViaje(viaje, uberApp.getMapa(), chofer);
-                if(chofer.getPosicion().equals(viaje.getDestino())) {
-                    log("El chofer " + chofer.getIdChofer() + " llevo a su destino " + viaje.getDestino().getDescripcion() + " al usuario " + usuario.getIdUsuario() + ".");
-                    chofer.setEstaOcupado(false);
-                }
-            }
-
-            /*int pasos = viaje.getCaminoAlUsuario().tamanio();
-            double pasoVisual = (destino.getLayoutX() - auto.getLayoutX()) / (pasos - 1);
-            System.out.println(pasoVisual);
 
             new Thread(() -> {
-                chofer.comenzarRecogida(
-                        viaje,
-                        uberApp.getMapa(),
-                        posicion -> {
-                            Platform.runLater(() -> {
-                                auto.setLayoutX(
-                                        auto.getLayoutX() + pasoVisual
-                                );
-                            });
-                        });
-            }).start();*/
+                comenzarRecogida(viaje, uberApp.getMapa(), chofer);
+                comenzarViaje(viaje, uberApp.getMapa(), chofer);
+            }).start();
+
 
         } else {
             log("Ninguna unidad acepto el viaje del usuario " + usuario.getIdUsuario() + ".");
         }
+        //actualizarChoferes();
     }
 
     /* comenzarRecogida(viaje, mapa, chofer)
@@ -128,27 +105,29 @@ public class Controlador {
 
     private void comenzarRecogida(Viaje viaje, Mapa mapa, Chofer chofer) {
         PilaSLinkedList caminoRecogida = viaje.getCaminoAlUsuario();
+        log("El chofer " + chofer.getIdChofer() + " comenzo el recorrido para recoger al usuario " + viaje.getUsuario().getIdUsuario());
 
-        new Thread(() -> {
+        while(!caminoRecogida.estaVacia()) {
+            int interseccionID = (int) caminoRecogida.sacar();
+            Interseccion nuevaPosicion = mapa.getInterseccion(interseccionID);
+            chofer.mover(nuevaPosicion);
+            System.out.println(nuevaPosicion.toString());
 
-            log("El chofer " + chofer.getIdChofer() + " comenzo el recorrido para recoger al usuario " + viaje.getUsuario().getIdUsuario());
-            while(!caminoRecogida.estaVacia()) {
-                int interseccionID = (int) caminoRecogida.sacar();
-                Interseccion nuevaPosicion = mapa.getInterseccion(interseccionID);
-                chofer.mover(nuevaPosicion);
+            //implementacion de mover el objeto en la interfaz
 
-
-                //implementacion de mover el objeto en la interfaz
-
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+        }
 
-        }).start();
+        if(chofer.getPosicion().equals(viaje.getOrigen())) {
+            log("El chofer " + chofer.getIdChofer() + " ha llegado a recoger al usuario " + viaje.getUsuario().getIdUsuario() + ".");
+        } else {
+            System.out.println("no llego");
+        }
+
 
     }
 
@@ -160,28 +139,27 @@ public class Controlador {
 
     private void comenzarViaje(Viaje viaje, Mapa mapa, Chofer chofer) {
         PilaSLinkedList caminoViaje = viaje.getCaminoAlDestino();
+        log("El chofer " + chofer.getIdChofer() + " comenzo el recorrido para llevar al usuario " + viaje.getUsuario().getIdUsuario() + " a su destino " + viaje.getDestino().getDescripcion());
 
-        new Thread(() -> {
-
-            log("El chofer " + chofer.getIdChofer() + " comenzo el recorrido para llevar al usuario " + viaje.getUsuario().getIdUsuario() + " a su destino " + viaje.getDestino().getDescripcion());
-            while(!caminoViaje.estaVacia()) {
-                int interseccionID = (int) caminoViaje.sacar();
-                Interseccion nuevaPosicion = mapa.getInterseccion(interseccionID);
-                chofer.mover(nuevaPosicion);
-
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        while(!caminoViaje.estaVacia()) {
+            int interseccionID = (int) caminoViaje.sacar();
+            Interseccion nuevaPosicion = mapa.getInterseccion(interseccionID);
+            chofer.mover(nuevaPosicion);
+            System.out.println(nuevaPosicion.toString());
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+        }
 
-        }).start();
-
-
-
-
+        if(chofer.getPosicion().equals(viaje.getDestino())) {
+            log("El chofer " + chofer.getIdChofer() + " llevo a su destino " + viaje.getDestino().getDescripcion() + " al usuario " + viaje.getUsuario().getIdUsuario() + ".");
+            chofer.setEstaOcupado(false);
+            viaje.setFinalizado(true);
+        } else {
+            System.out.println("no llego");
+        }
 
     }
 
