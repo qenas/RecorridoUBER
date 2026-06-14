@@ -27,15 +27,15 @@ public class Interfaz extends Application {
 
         // 2) Crea un loader para cargar el archivo .FXML para crear la interfaz. El controlador es el encargado de los botones y eventos
         // de esta interfaz.
-        //FXMLLoader loader = new FXMLLoader(getClass().getResource("/interfaz/Interfaz.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/interfaz/Interfaz.fxml"));
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/interfaz/Vista.fxml"));
+        //FXMLLoader loader = new FXMLLoader(getClass().getResource("/interfaz/Vista.fxml"));
         Parent root = loader.load();
-        //Controlador controlador = loader.getController();
-        //controlador.setUberApp(uberApp);
+        Controlador controlador = loader.getController();
+        controlador.setUberApp(uberApp);
 
-        ControladorViaje controladorViaje = loader.getController();
-        controladorViaje.setSistemaUber(uberApp);
+        //ControladorViaje controladorViaje = loader.getController();
+        //controladorViaje.setSistemaUber(uberApp);
 
 
 

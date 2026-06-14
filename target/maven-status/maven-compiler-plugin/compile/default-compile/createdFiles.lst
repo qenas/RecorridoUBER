@@ -9,13 +9,13 @@ grafos\contenedores\GraphPriorityQueue.class
 mapa\Mapa.class
 servicio\ColaChoferes.class
 grafos\recursos\OperacionesCL3.class
+gestion\ResultadoSimulacion.class
 grafos\recursos\Connection.class
 gestion\JSONLector.class
 grafos\contenedores\AbsSet.class
 grafos\contenedores\ListaDoubleLinkedL.class
 grafos\contenedores\ColaLinkedList.class
 servicio\Chofer.class
-servicio\ResultadoSimulacion.class
 interfaz\ControladorViaje.class
 grafos\recursos\OperacionesCL1.class
 grafos\grafoNoDirigido\AbsGrafoND.class

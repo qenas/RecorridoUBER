@@ -83,15 +83,18 @@ public class Usuario {
 
     public Viaje pedirUber(ArrayList<Chofer> choferes, Mapa mapa) {
         Viaje viaje = null;
-        Random random = new Random();
         boolean atendido = false;
 
         Chofer chofer = null;
 
         actualizarColaChoferes(choferes, mapa);
 
+        viaje = new Viaje(this, null, origen, destino); // el destino podria ser generado aleatoriamente desde
 
-        if(this.colaChoferes.estaVacia()) {
+        return viaje;
+
+
+       /* if(this.colaChoferes.estaVacia()) {
             System.out.println("Error: cola de choferes vacia");
         } else {
             while(!this.colaChoferes.estaVacia() && !atendido) {
@@ -120,26 +123,18 @@ public class Usuario {
                 *   el usuario que pidió el uber,
                 *   el chofer que le aceptó el viaje
                 *   las posiciones de origen y destino de su viaje
-                * */
+                *
 
 
-                viaje = new Viaje(this, null, origen, destino); // el destino podria ser generado aleatoriamente desde aca
 
-            }
-        }
+            }*/
 
-        borrarColaChoferes();
 
-        return viaje;
+
+
     }
 
-    private void borrarColaChoferes() {
-        while(!this.colaChoferes.estaVacia()) {
-            Chofer chofer = (Chofer) this.colaChoferes.sacar();
-            chofer.setETA(-1);
-        }
-        this.colaChoferes.limpiar();
-    }
+
 
 
 

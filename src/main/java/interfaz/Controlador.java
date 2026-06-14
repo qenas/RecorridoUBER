@@ -64,8 +64,10 @@ public class Controlador {
         log("El usuario " + usuario.getIdUsuario() + " pidio un uber en " + usuario.getOrigen().getDescripcion() + ".");
         if(viaje != null) {
             uberApp.addNuevoViaje(viaje);
+            cargarListaResultados(usuario, viaje);
             viaje.cargarCaminoDestino(uberApp.getMapa());
             viaje.cargarCaminoUsuario(uberApp.getMapa());
+
 
             Chofer chofer = viaje.getChofer();
             log("El chofer " + chofer.getIdChofer() + " acepto el viaje del usuario " + usuario.getIdUsuario() + ".");
@@ -161,18 +163,61 @@ public class Controlador {
     @FXML private TableColumn<ResultadoSimulacion, String> colETA;
     @FXML private TableColumn<ResultadoSimulacion, String> colAcepto;
 
-    private ObservableList<ResultadoSimulacion> cargarListaResultados(Usuario usuario) {
+    private void cargarListaResultados(Usuario usuario, Viaje viaje) {
         ObservableList<ResultadoSimulacion> listaResultados = FXCollections.observableArrayList();
 
 
+        ColaChoferes colaChoferesUsuario = usuario.getColaChoferes();
+
         int contadorOrden = 1;          // Nuestro índice autoincrementado
-        boolean viajeTomado = viaje.ge;
+        boolean viajeTomado = false;
 
+        while (!colaChoferesUsuario.estaVacia() && !viajeTomado) {   // Mientras la cola no este vacia
+            Chofer conductorActual = (Chofer) colaChoferesUsuario.sacar();   // saco un conductor de la colaPrioridad
+            String respuesta;                               // respuesta : es una cadena
 
+            viajeTomado = conductorActual.decidirAceptarViaje();
 
+            if (viajeTomado) {    // .decidirAceptarViaje() me devuelve un booleano
+                respuesta = "SÍ (Aceptado)";   //respuesta : SI
+                conductorActual.setEstaOcupado(true);  // Traspasamos el chofer a la lista de Ocupado
+                viaje.setChofer(conductorActual);
+            } else {
+                respuesta = "NO (Rechazado)";
+            }
 
+            // Agregamos la fila a la tabla con el orden autoincrementado
+            String idChofer = "Chofer " + conductorActual.getIdChofer();
+            String etaMinuto = conductorActual.getETA() + " minutos";
+            listaResultados.add(new ResultadoSimulacion(
+                    contadorOrden,
+                    idChofer,
+                    conductorActual.getPosicion().getDescripcion(),
+                    etaMinuto,
+                    respuesta
+            ));
 
+            contadorOrden++; // Incrementa para el siguiente conductor de la cola
+        }
 
+        while(!colaChoferesUsuario.estaVacia()) { // para el resto que no llego a evaluarse
+            Chofer conductorActual = (Chofer) colaChoferesUsuario.sacar();   // saco un conductor de la colaPrioridad
+            // respuesta : es una cadena
+
+            String idChofer = "Chofer " + conductorActual.getIdChofer();
+            String etaMinuto = conductorActual.getETA() + " minutos";
+            listaResultados.add(new ResultadoSimulacion(
+                    contadorOrden,
+                    idChofer,
+                    conductorActual.getPosicion().getDescripcion(),
+                    etaMinuto,
+                    "No llego a evaluarse."
+            ));
+
+            contadorOrden++; // Incrementa para el siguiente conductor de la cola
+        }
+
+        tablaResultados.setItems(listaResultados);
 
     }
 

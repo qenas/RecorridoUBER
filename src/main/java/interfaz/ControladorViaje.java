@@ -100,7 +100,7 @@ public class ControladorViaje {
             listaResultados.add(new ResultadoSimulacion(
                     contadorOrden,
                     idChofer,
-                    //conductorActual.getUbicacion(),
+                    conductorActual.getPosicion().getDescripcion(),
                     etaMinuto,
                     respuesta
             ));

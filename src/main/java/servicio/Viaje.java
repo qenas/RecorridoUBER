@@ -26,6 +26,10 @@ public class Viaje {
         this.finalizado = false;
     }
 
+    public void setChofer(Chofer chofer) {
+        this.chofer = chofer;
+    }
+
     public void setFinalizado(boolean finalizado) {
         this.finalizado = finalizado;
     }

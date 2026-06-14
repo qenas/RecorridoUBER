@@ -2,7 +2,8 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -10,7 +11,6 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="interfaz.Controlador">
    <top>
@@ -34,14 +34,6 @@
          </children>
       </GridPane>
    </top>
-   <center>
-      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
-         <children>
-            <Label fx:id="lblUsuario" text="Label" />
-            <ListView fx:id="listaChoferes" prefHeight="200.0" prefWidth="200.0" />
-         </children>
-      </VBox>
-   </center>
    <bottom>
       <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
@@ -58,4 +50,19 @@
          </children>
       </VBox>
    </bottom>
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+         <children>
+            <TableView fx:id="tablaResultados" prefHeight="200.0" prefWidth="200.0">
+              <columns>
+                <TableColumn fx:id="colOrden" prefWidth="61.599974036216736" text="Orden" />
+                <TableColumn fx:id="colChofer" prefWidth="88.79999542236328" text="ID" />
+                  <TableColumn fx:id="colUbicacion" prefWidth="71.20001220703125" text="Ubicacion" />
+                  <TableColumn fx:id="colETA" prefWidth="79.20001220703125" text="ETA" />
+                  <TableColumn fx:id="colAcepto" prefWidth="75.0" text="Acepto Viaje" />
+              </columns>
+            </TableView>
+         </children>
+      </VBox>
+   </center>
 </BorderPane>
