@@ -8,61 +8,61 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="interfaz.Controlador">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="870.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="interfaz.Controlador">
    <top>
-      <GridPane BorderPane.alignment="CENTER">
+      <GridPane prefHeight="58.0" prefWidth="800.0" BorderPane.alignment="CENTER">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
         <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
             <Button fx:id="btnGenUsuario" mnemonicParsing="false" onAction="#generarUsuario" text="Generar usuario" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
             <Button fx:id="btnGenChofer" mnemonicParsing="false" onAction="#generarChofer" text="Generar Chofer" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-            <Button fx:id="btnSimular" mnemonicParsing="false" onAction="#simularViaje" text="Comenzar" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+            <Button fx:id="btnSimular" mnemonicParsing="false" onAction="#simularViaje" text="Comenzar viaje" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
          </children>
       </GridPane>
    </top>
    <bottom>
-      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="159.0" prefWidth="800.0" BorderPane.alignment="CENTER">
          <children>
             <Label fx:id="lblEventos" text="Lista de Eventos">
                <font>
-                  <Font name="Arial" size="17.0" />
+                  <Font name="Arial Bold" size="17.0" />
                </font>
             </Label>
-            <TextArea fx:id="txtEventos" editable="false" prefHeight="200.0" prefWidth="200.0" promptText="- vacio -">
+            <TextArea fx:id="txtEventos" editable="false" prefHeight="148.0" prefWidth="800.0" promptText="- vacio -">
                <font>
-                  <Font name="Arial" size="12.0" />
+                  <Font name="Arial" size="15.0" />
                </font>
             </TextArea>
          </children>
       </VBox>
    </bottom>
    <center>
-      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="382.0" prefWidth="375.0" BorderPane.alignment="CENTER">
          <children>
-            <TableView fx:id="tablaResultados" prefHeight="200.0" prefWidth="200.0">
+            <TableView fx:id="tablaResultados" prefHeight="382.0" prefWidth="379.0">
               <columns>
                 <TableColumn fx:id="colOrden" prefWidth="61.599974036216736" text="Orden" />
-                <TableColumn fx:id="colChofer" prefWidth="88.79999542236328" text="ID" />
-                  <TableColumn fx:id="colUbicacion" prefWidth="71.20001220703125" text="Ubicacion" />
-                  <TableColumn fx:id="colETA" prefWidth="79.20001220703125" text="ETA" />
-                  <TableColumn fx:id="colAcepto" prefWidth="75.0" text="Acepto Viaje" />
+                <TableColumn fx:id="colId" prefWidth="88.79999542236328" text="ID" />
+                  <TableColumn fx:id="colUbicacion" prefWidth="83.7333984375" text="Ubicacion" />
+                  <TableColumn fx:id="coleta" prefWidth="54.66656494140625" text="ETA" />
+                  <TableColumn fx:id="colAcepto" prefWidth="126.40000610351564" text="Acepto Viaje" />
               </columns>
             </TableView>
          </children>
       </VBox>
    </center>
+   <left>
+       <Pane fx:id="mapContainer" prefHeight="400.0" prefWidth="450.0" />
+   </left>
 </BorderPane>

@@ -24,9 +24,40 @@ public class Mapa {
 
         this.grafoPesos = new GrafoDirigido(this.intersecciones.size());
         cargarGrafoPesos(jsonObject);
+        realizarAlgoritmosGrafo();
+    }
+    //--------------------------
+    public Map<Coordenada, Interseccion> getIntersecciones() {
+        return this.intersecciones;
+    }
+    public Map<String, Calle> getCalles() {
+        return this.calles;
+    }
+    public ArrayList<Coordenada> recorridoNodoANodoB(ArrayList<Integer> caminoID){
+        ArrayList<Coordenada> recorrido = new ArrayList<Coordenada>();
+        Map<Integer, Interseccion> interseccionesPorID = armarMapaPorId();
 
+        for(int i=0; i<caminoID.size()-1; i++){
+            Interseccion nodoA = interseccionesPorID.get(caminoID.get(i));
+            Interseccion nodoB = interseccionesPorID.get(caminoID.get(i+1));
+            ArrayList<Coordenada> recorridoAux = null;//recorridoNodosAdyacentes(nodoA, nodoB);
+            if(recorridoAux!=null){
+                for(Coordenada coord: recorridoAux){
+                    if(!recorrido.contains(coord)){
+                        recorrido.add(coord);
+                    }
+                }
+            }
+            recorrido.add(nodoA.getCoordenada());
+            if(i==caminoID.size()-1) recorrido.add(nodoB.getCoordenada());
+        }
+        for(Coordenada coord: recorrido){
+            System.out.println("|||||||||||"+coord.getLatitud()+","+coord.getLongitud());
+        }
+        return recorrido;
     }
 
+    //--------------------------
     private String normarlizarNombreCalle(String nombreCalle) {
         nombreCalle = Normalizer.normalize(nombreCalle, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}", "");
@@ -36,6 +67,19 @@ public class Mapa {
                 .replaceFirst("^(avenida|av\\.|pasaje|paseo|doctor|dr\\.)\\s+", "")
                 .trim();
     }
+
+    private ArrayList<String> getNodos(JSONObject jsonObject) {
+        ArrayList<String> aux = new ArrayList<>();
+        if(jsonObject.getString("type").equals("LineString")) {
+            JSONArray coordinates = jsonObject.getJSONArray("coordinates");
+            for(int i = 0; i < coordinates.length(); i++) {
+                String nodo = coordinates.getJSONArray(i).toString();
+                aux.add(nodo);
+            }
+        }
+        return aux;
+    }
+
 
     // metodo para cargar el  map de calles <NombreCalle, Calle> y el map de intersecciones
 
@@ -59,6 +103,9 @@ public class Mapa {
 
             if (geom.getString("type").equals("LineString") && nombreCalle != null) { //Verificacion de que el feature sea lineString y la calle tenga nombre
                 JSONArray coords = geom.getJSONArray("coordinates");
+                //------------------------------------------------------
+                ArrayList<Coordenada> segmento = new ArrayList<Coordenada>();
+                //------------------------------------------------------
                 for (int j = 0; j < coords.length(); j++) {
                     //coord[longtitud, latitud]
                     Coordenada coord = new Coordenada((coords.getJSONArray(j)).getDouble(0), (coords.getJSONArray(j)).getDouble(1));
@@ -93,7 +140,11 @@ public class Mapa {
                     } else {
                         aux.get(pos).addCalle(calle);
                     }
+                    //-----------------------------------
+                    segmento.add(coord);
                 }
+                calles.get(nombreCalle).agregarSegmento(segmento);
+                //--------------------------------------------------
             }
         }
 
@@ -203,7 +254,7 @@ public class Mapa {
         }
     }
 
-
+    //metodo auxiliar para mostrar la matriz de pesos
 
     private Map<Integer, Interseccion> armarMapaPorId() {
         Map<Integer, Interseccion> aux = new HashMap<>();
@@ -215,6 +266,11 @@ public class Mapa {
         }
 
         return aux;
+    }
+
+    //metodo privado que realiza el Dijkstra y Floyd en el grafo
+    private void realizarAlgoritmosGrafo() {
+        this.grafoPesos.realizarFloyd();
     }
 
     public void mostrarMatrizDePesos() {

@@ -1,5 +1,6 @@
 package servicio;
 
+import interfaz.MapaView;
 import mapa.Mapa;
 
 import java.util.ArrayList;
@@ -9,14 +10,21 @@ public class UberApp {
     private ArrayList<Usuario> usuarios;
     private Mapa mapa;
     private ArrayList<Viaje> viajes;
-
+    //---------------------------------------------
+    private MapaView vistaMapa;
+    //---------------------------------------------
     public UberApp (Mapa mapa) {
         this.mapa = mapa;
         this.choferes = new ArrayList<>();
         this.usuarios = new ArrayList<>();
         this.viajes = new ArrayList<>();
+        //-------------------------------------------
+        this.vistaMapa = new MapaView(mapa);
+        //-------------------------------------------
     }
-
+    //---------------------------------------------
+    public MapaView getVistaMapa(){ return this.vistaMapa; }
+    //---------------------------------------------
     public Mapa getMapa() {
         return this.mapa;
     }
@@ -25,6 +33,9 @@ public class UberApp {
         Usuario nuevoUsuario = new Usuario(this.usuarios.size());
         nuevoUsuario.cargarPosiciones(this.mapa);
         this.usuarios.add(nuevoUsuario);
+        //----------------------------------------
+        vistaMapa.agrgarUsuario(nuevoUsuario);
+        //----------------------------------------
     }
 
     public ArrayList<Chofer> getChoferesDisponibles() {
@@ -42,6 +53,9 @@ public class UberApp {
         Chofer nuevoChofer = new Chofer(this.choferes.size());
         nuevoChofer.cargarPosicion(this.mapa);
         this.choferes.add(nuevoChofer);
+        //----------------------------------------
+        vistaMapa.agregarCoche(nuevoChofer);
+        //----------------------------------------
     }
 
 

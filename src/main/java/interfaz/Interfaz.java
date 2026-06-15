@@ -34,15 +34,13 @@ public class Interfaz extends Application {
         Controlador controlador = loader.getController();
         controlador.setUberApp(uberApp);
 
-        //ControladorViaje controladorViaje = loader.getController();
-        //controladorViaje.setSistemaUber(uberApp);
 
 
 
 
-        Scene scene = new Scene(root, 600, 400);
+        Scene scene = new Scene(root, 870, 600);
 
-        stage.setTitle("Prueba");
+        stage.setTitle("TPI - AyED 2026 - Uber");
         stage.setScene(scene);
         stage.show();
 

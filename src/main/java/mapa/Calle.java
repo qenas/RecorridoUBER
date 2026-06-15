@@ -1,18 +1,31 @@
 package mapa;
 
+import java.util.ArrayList;
+
 public class Calle {
     private int id;
     private String nombre, tipo;
     private boolean manoUnica;
+    //---------------------------------
+    private ArrayList<ArrayList<Coordenada>> coordenadas;  //Atributo
+
+    void agregarSegmento(ArrayList<Coordenada> segmento){
+        coordenadas.add(segmento);
+    }
+    public ArrayList<ArrayList<Coordenada>> getCoordenadas(){
+        return coordenadas;
+    }
+    //---------------------------------
 
     public Calle(int id, String nombre, String tipo, boolean manoUnica) {
         this.id = id;
         this.nombre = nombre;
         this.tipo = tipo;
         this.manoUnica = manoUnica;
-
+        //-------------------------------------------------------
+        this.coordenadas = new ArrayList<ArrayList<Coordenada>>();
+        //-------------------------------------------------------
     }
-
 
     public String getTipo() {
         return this.tipo;

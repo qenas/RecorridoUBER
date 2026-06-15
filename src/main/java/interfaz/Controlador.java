@@ -7,18 +7,27 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
 import mapa.Interseccion;
 import mapa.Mapa;
 import servicio.*;
 
 public class Controlador {
 
+    private ObservableList<ResultadoSimulacion> listaResultados = FXCollections.observableArrayList();
     private UberApp uberApp;
 
     public void setUberApp(UberApp uberApp) {
         this.uberApp = uberApp;
+        //-------------------------------------------------------
+        mapContainer.getChildren().add(uberApp.getVistaMapa());
+        //-------------------------------------------------------
     }
-
+    //---------------------------------------------
+    @FXML
+    private Pane mapContainer;
+    //---------------------------------------------
     @FXML
     private Button btnGenUsuario;
     @FXML
@@ -34,8 +43,6 @@ public class Controlador {
         Platform.runLater(() -> {
             txtEventos.appendText(mensaje + "\n");
         });
-
-
     }
 
     @FXML
@@ -56,23 +63,26 @@ public class Controlador {
 
 
     @FXML
-    private void simularViaje() {;
-
+    private void simularViaje() {
+        //uberApp.simular();
+        System.out.println("Simular viaje");
         Usuario usuario = uberApp.getUltimoUsuario();
         Viaje viaje = usuario.pedirUber(uberApp.getChoferesDisponibles(), uberApp.getMapa());
         log("El usuario " + usuario.getIdUsuario() + " pidio un uber en " + usuario.getOrigen().getDescripcion() + ".");
         if(viaje != null) {
             uberApp.addNuevoViaje(viaje);
             cargarListaResultados(usuario, viaje);
+            Chofer chofer = viaje.getChofer();
             viaje.cargarCaminoDestino(uberApp.getMapa());
             viaje.cargarCaminoUsuario(uberApp.getMapa());
 
-            Chofer chofer = viaje.getChofer();
             log("El chofer " + chofer.getIdChofer() + " acepto el viaje del usuario " + usuario.getIdUsuario() + ".");
 
             new Thread(() -> {
                 comenzarRecogida(viaje, uberApp.getMapa(), chofer);
                 comenzarViaje(viaje, uberApp.getMapa(), chofer);
+                //-----------------------------------------------------------
+                uberApp.getVistaMapa().getCocheView(chofer).actualizar();
             }).start();
 
 
@@ -92,6 +102,7 @@ public class Controlador {
     private void comenzarRecogida(Viaje viaje, Mapa mapa, Chofer chofer) {
         PilaSLinkedList caminoRecogida = viaje.getCaminoAlUsuario();
         log("El chofer " + chofer.getIdChofer() + " comenzo el recorrido para recoger al usuario " + viaje.getUsuario().getIdUsuario());
+        System.out.println("comenzar recogida");
 
         while(!caminoRecogida.estaVacia()) {
             int interseccionID = (int) caminoRecogida.sacar();
@@ -100,9 +111,10 @@ public class Controlador {
             System.out.println(nuevaPosicion.toString());
 
             //implementacion de mover el objeto en la interfaz
+            uberApp.getVistaMapa().getCocheView(chofer).actualizar();
 
             try {
-                Thread.sleep(1000);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -127,11 +139,18 @@ public class Controlador {
         PilaSLinkedList caminoViaje = viaje.getCaminoAlDestino();
         log("El chofer " + chofer.getIdChofer() + " comenzo el recorrido para llevar al usuario " + viaje.getUsuario().getIdUsuario() + " a su destino " + viaje.getDestino().getDescripcion());
 
+        //implementacion de mover el objeto en la interfaz
+        uberApp.getVistaMapa().desaparecer(viaje.getUsuario());
+
         while(!caminoViaje.estaVacia()) {
             int interseccionID = (int) caminoViaje.sacar();
             Interseccion nuevaPosicion = mapa.getInterseccion(interseccionID);
             chofer.mover(nuevaPosicion);
             System.out.println(nuevaPosicion.toString());
+
+            //implementacion de mover el objeto en la interfaz
+            uberApp.getVistaMapa().getCocheView(chofer).actualizar();
+
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -149,17 +168,30 @@ public class Controlador {
 
     }
 
+
     @FXML private TableView<ResultadoSimulacion> tablaResultados;
     @FXML private TableColumn<ResultadoSimulacion, Integer> colOrden;
     @FXML private TableColumn<ResultadoSimulacion, String> colId;
     @FXML private TableColumn<ResultadoSimulacion, String> colUbicacion;
-    @FXML private TableColumn<ResultadoSimulacion, String> colETA;
+    @FXML private TableColumn<ResultadoSimulacion, String> coleta;
     @FXML private TableColumn<ResultadoSimulacion, String> colAcepto;
 
+
+    //Metodo para setear los datos en el TableList de la interfaz
+    @FXML
+    public void initialize() {
+        // Vincular columnas de la tabla
+        colOrden.setCellValueFactory(new PropertyValueFactory<>("orden"));
+        colId.setCellValueFactory(new PropertyValueFactory<>("idChofer"));
+        colUbicacion.setCellValueFactory(new PropertyValueFactory<>("ubicacion"));
+        coleta.setCellValueFactory(new PropertyValueFactory<>("eta"));
+        colAcepto.setCellValueFactory(new PropertyValueFactory<>("aceptoViaje"));
+
+        tablaResultados.setItems(listaResultados);
+
+    }
+
     private void cargarListaResultados(Usuario usuario, Viaje viaje) {
-        ObservableList<ResultadoSimulacion> listaResultados = FXCollections.observableArrayList();
-
-
         ColaChoferes colaChoferesUsuario = usuario.getColaChoferes();
 
         int contadorOrden = 1;          // Nuestro índice autoincrementado
@@ -172,7 +204,7 @@ public class Controlador {
             viajeTomado = conductorActual.decidirAceptarViaje();
 
             if (viajeTomado) {    // .decidirAceptarViaje() me devuelve un booleano
-                respuesta = "SÍ (Aceptado)";   //respuesta : SI
+                respuesta = "SI (Aceptado)";   //respuesta : SI
                 conductorActual.setEstaOcupado(true);  // Traspasamos el chofer a la lista de Ocupado
                 viaje.setChofer(conductorActual);
             } else {
