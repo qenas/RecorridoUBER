@@ -16,7 +16,6 @@ grafos\contenedores\AbsSet.class
 grafos\contenedores\ListaDoubleLinkedL.class
 grafos\contenedores\ColaLinkedList.class
 servicio\Chofer.class
-interfaz\ControladorViaje.class
 grafos\recursos\OperacionesCL1.class
 grafos\grafoNoDirigido\AbsGrafoND.class
 main.class

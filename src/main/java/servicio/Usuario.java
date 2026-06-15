@@ -41,7 +41,15 @@ public class Usuario {
         this.idUsuario = idUsuario;
     }
 
-    public void actualizarColaChoferes(ArrayList<Chofer> choferes, Mapa mapa) {
+
+    /* actualizarColaChoferes(ArrayList<Chofer> choferes, Mapa mapa)
+    * Parámetros: "choferes" de tipo arraylist, "mapa" de tipo Mapa.
+    * Este metodo permite cargar la cola de choferes de un usuario, en el se realiza el algoritmo de Dijkstra
+    * desde la posicion del usuario hacia el resto de nodos del grafo del mapa.
+    * Luego de realizar el algoritmo antes mencionado, obtiene el costo del camino desde la posicion del usuario
+    * hasta las respectivas posiciones del chofer. Actualiza el ETA de todos los choferes antes de meterlos en la cola de choferes.
+    * */
+    private void actualizarColaChoferes(ArrayList<Chofer> choferes, Mapa mapa) {
         GrafoDirigido grafoMapa = mapa.getGrafoPesos();
 
         grafoMapa.realizarDijkstra(this.origen.getID());
